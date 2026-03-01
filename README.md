@@ -1,4 +1,3 @@
-Projeto da Disciplina de  (ADS - 4º semestre, Faculdade Impacta, 2026/1)
 <h1 align="center"; style="font-weight: bold;">Aluguel de Carros</h1>
 
 <h3 align="center"><img  alt="Faculdade Impacta" width = "400px" src="https://www.impacta.edu.br/themes/wc_agenciar3/images/logo-new.png"></h3>
