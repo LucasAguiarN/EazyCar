@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, make_response
-from Models.data_base import iniciar_db, db
+from Backend.Models.data_base import iniciar_db, db
 
 def create_app():
 
