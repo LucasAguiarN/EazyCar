@@ -8,12 +8,12 @@ services:
       - "127.0.0.1:3307:3306"
     environment:
       MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_ROOT_PASSWORD: "123"
       MYSQL_DATABASE: aluguel_carros
     volumes:
       - .db:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psenha"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123"]
       timeout: 5s
       retries: 10
       interval: 5s
