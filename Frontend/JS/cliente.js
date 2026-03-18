@@ -54,3 +54,35 @@ async function enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, 
         console.error("Erro:", error);
     }
 }
+
+async function autenticar_login() {   
+    let email = document.getElementById("email").value;
+    let senha = document.getElementById("senha").value;
+    
+    let dados = {
+        "email": email,
+        "senha": senha
+    }
+
+    try{
+        let request = await fetch(                              
+            "http://localhost:5000/clienteslogin",{
+                method:"POST",
+                body:JSON.stringify(dados),            
+                headers:{
+                    'Content-Type':'application/json'
+                }                    
+            }
+        );
+
+        let resposta = await request.json();
+        
+        if (!request.ok){
+            throw new Error(resposta);
+        }
+        window.location.href = "../pages/index.html";
+    }
+    catch (error){
+        console.error("Erro:", error);
+    }
+}
