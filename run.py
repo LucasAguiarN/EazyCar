@@ -1,9 +1,12 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
+from flask_cors import CORS
 from Backend.Models.data_base import iniciar_db, db
+from Backend.Controllers.cliente_controller import ClienteController
 
 def create_app():
 
     app = Flask(__name__)
+    CORS(app)
 
     iniciar_db(app)
     
@@ -15,6 +18,23 @@ def create_app():
         return make_response(jsonify({
             "mensagem": "API - OK; Docker - Up",
         }), 200)
+
+    @app.route('/clientes', methods=['POST', 'OPTIONS'])
+    def cadastrar_cliente():
+        return ClienteController.cadastar_cliente()
+
+    @app.route('/clientes', methods=['GET'])
+    def listar_clientes():
+        return ClienteController.listar_clientes()
+
+    @app.route('/clientes/<cpf>', methods=['GET'])
+    def exibir_cliente(cpf):
+        return ClienteController.exibir_cliente(cpf)
+
+    @app.route('/clienteslogin', methods=['POST', 'OPTIONS'])
+    def login_cliente():
+        dados = request.get_json(silent=True) or {}
+        return ClienteController.login_cliente(dados.get('email'), dados.get('senha'))
 
     return app
 

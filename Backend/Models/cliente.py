@@ -1,4 +1,4 @@
-from Models import db
+from .data_base import db
 
 class Cliente(db.Model):
 
@@ -21,7 +21,6 @@ class Cliente(db.Model):
             'nome': self.nome,
             'cpf': self.cpf,
             'email': self.email,
-            'senha': self.senha,
             'celular': self.celular,
             'cep': self.cep,
             'endereco' : self.endereco,

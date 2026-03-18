@@ -1,4 +1,4 @@
-function validar_dados(){
+function validar_dados() {
     let nome = document.getElementById("nome").value;
     let email = document.getElementById("email").value;
     let cpf = document.getElementById("cpf").value;
@@ -8,81 +8,87 @@ function validar_dados(){
     let endereco = document.getElementById("endereco").value;
     let numero = document.getElementById("numero").value;
 
-    if (!nome || !email || !cpf || !senha || !celular || !cep || !endereco || !numero){
-        alert("Preencha Todos os Campos");
+    if (!nome || !email || !cpf || !senha || !celular || !cep || !endereco || !numero) {
+        alert("Preencha todos os campos!");
+        return;
     }
-    else{
-        enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, numero);
-    }
+
+    enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, numero);
 }
 
 async function enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, numero) {
     let complemento = document.getElementById("complemento").value;
 
     let dados = {
-        "nome": nome,
-        "cpf": cpf,
-        "email": email,
-        "senha": senha,
-        "cpf": cpf,
-        "celular": celular,
-        "cep": cep,
-        "endereco": endereco,
-        "numero": numero,
-        "complemento": complemento
-    }
-    
-    try{
-        let response = await fetch(
-            "http://localhost:5000/clientes", {
-                method: "POST",
-                body: JSON.stringify(dados),
-                headers: {
-                    "Content-Type": "application/json"
-                }
+        nome: nome,
+        cpf: cpf,
+        email: email,
+        senha: senha,
+        celular: celular,
+        cep: cep,
+        endereco: endereco,
+        numero: numero,
+        complemento: complemento
+    };
+
+    try {
+        let response = await fetch("http://localhost:5000/clientes", {
+            method: "POST",
+            body: JSON.stringify(dados),
+            headers: {
+                "Content-Type": "application/json"
             }
-        );
-    
+        });
+
+        let resposta = await response.json();
+
         if (!response.ok) {
-            let resposta = await response.json();
-            throw new Error(resposta);
+            throw new Error(resposta.mensagem || "Erro ao cadastrar cliente");
         }
-        alert("Cadastro Realizado com Sucesso!");
+
+        alert("Cadastro realizado com sucesso!");
         window.location.href = "../pages/login.html";
-    }
-    catch (error) {
+
+    } catch (error) {
         console.error("Erro:", error);
+        alert(error.message);
     }
 }
 
-async function autenticar_login() {   
+async function autenticar_login() {
     let email = document.getElementById("email").value;
     let senha = document.getElementById("senha").value;
-    
-    let dados = {
-        "email": email,
-        "senha": senha
+
+    if (!email || !senha) {
+        alert("Preencha email e senha!");
+        return;
     }
 
-    try{
-        let request = await fetch(                              
-            "http://localhost:5000/clienteslogin",{
-                method:"POST",
-                body:JSON.stringify(dados),            
-                headers:{
-                    'Content-Type':'application/json'
-                }                    
+    let dados = {
+        email: email,
+        senha: senha
+    };
+
+    try {
+        let request = await fetch("http://localhost:5000/clienteslogin", {
+            method: "POST",
+            body: JSON.stringify(dados),
+            headers: {
+                "Content-Type": "application/json"
             }
-        );
+        });
 
         let resposta = await request.json();
-        
-        if (!request.ok){
-            throw new Error(resposta);
+
+        if (!request.ok) {
+            throw new Error(resposta.mensagem || "Email ou senha inválidos");
         }
-        window.location.href = "../pages/index.html";
-    }
-    catch (error){
+
+        alert("Login realizado com sucesso!");
+        window.location.href = "../pages/dashboard.html";
+
+    } catch (error) {
         console.error("Erro:", error);
+        alert(error.message);
     }
 }
