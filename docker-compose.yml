@@ -6,17 +6,14 @@ services:
     container_name: mysql
     ports:
       - "127.0.0.1:3307:3306"
-    env_file:
-      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${mysql_root_password}
-      MYSQL_USER: user_flask
-      MYSQL_PASSWORD: ${db_password}
-      MYSQL_DATABASE: ${db_name}
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_DATABASE: aluguel_carros
     volumes:
       - .db:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${mysql_root_password}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psenha"]
       timeout: 5s
       retries: 10
       interval: 5s
@@ -28,8 +25,6 @@ services:
       - "5000:5000"
     volumes:
       - .:/app
-    env_file:
-      - .env
     environment:
       FLASK_APP: run.py
       FLASK_ENV: development
