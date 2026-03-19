@@ -21,6 +21,8 @@ def create_app():
 
     @app.route('/clientes', methods=['POST', 'OPTIONS'])
     def cadastrar_cliente():
+        if request.method == 'OPTIONS':
+            return ('', 204)
         return ClienteController.cadastar_cliente()
 
     @app.route('/clientes', methods=['GET'])
@@ -33,6 +35,8 @@ def create_app():
 
     @app.route('/clienteslogin', methods=['POST', 'OPTIONS'])
     def login_cliente():
+        if request.method == 'OPTIONS':
+            return ('', 204)
         dados = request.get_json(silent=True) or {}
         return ClienteController.login_cliente(dados.get('email'), dados.get('senha'))
 
