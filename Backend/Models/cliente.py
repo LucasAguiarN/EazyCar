@@ -8,7 +8,8 @@ class Cliente(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     cpf = db.Column(db.String(14), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    senha = db.Column(db.String(100), nullable=False)
+    # Werkzeug gera hashes maiores que 100 chars; senão o MySQL quebra com erro de tamanho.
+    senha = db.Column(db.String(255), nullable=False)
     celular = db.Column(db.String(50), nullable=False)
     cep = db.Column(db.String(9), nullable=False)
     endereco = db.Column(db.String(100), nullable=False)
