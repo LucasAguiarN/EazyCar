@@ -1,37 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Veículos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Pro - Vehicles</title>
+    <link rel="stylesheet" href="../css/ui.css">
 </head>
 
 <body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">RC</div>
+                <span>RentCar Pro</span>
+            </div>
 
-<h2>Lista de Veículos</h2>
+            <nav>
+                <ul class="menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="listar_veiculos.html" class="active">Vehicles</a></li>
+                    <li><a href="cadastro_veiculo.html">New Vehicle</a></li>
+                </ul>
+            </nav>
 
-<table border="1">
+            <a class="logout" href="login.html">Logout</a>
+        </aside>
 
-<tr>
-<th>Marca</th>
-<th>Modelo</th>
-<th>Ano</th>
-<th>Status</th>
-</tr>
+        <main class="main">
+            <header class="topbar">Car Rental Management</header>
 
-<tr>
-<td>Toyota</td>
-<td>Corolla</td>
-<td>2022</td>
-<td>Disponível</td>
-</tr>
+            <section class="content">
+                <h1>Vehicles</h1>
+                <p>Manage your fleet</p>
 
-<tr>
-<td>Honda</td>
-<td>Civic</td>
-<td>2023</td>
-<td>Alugado</td>
-</tr>
-
-</table>
+                <div class="panel-card table-wrap">
+                    <table class="vehicles-table">
+                        <thead>
+                            <tr>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Plate</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Toyota</td>
+                                <td>Corolla</td>
+                                <td>2024</td>
+                                <td>ABC-1234</td>
+                                <td><span class="tag tag-available">Available</span></td>
+                            </tr>
+                            <tr>
+                                <td>Honda</td>
+                                <td>Civic</td>
+                                <td>2023</td>
+                                <td>DEF-5678</td>
+                                <td><span class="tag tag-rented">Rented</span></td>
+                            </tr>
+                            <tr>
+                                <td>Ford</td>
+                                <td>Focus</td>
+                                <td>2022</td>
+                                <td>GHI-9012</td>
+                                <td><span class="tag tag-maintenance">Maintenance</span></td>
+                            </tr>
+                            <tr>
+                                <td>Chevrolet</td>
+                                <td>Onix</td>
+                                <td>2024</td>
+                                <td>JKL-3456</td>
+                                <td><span class="tag tag-available">Available</span></td>
+                            </tr>
+                            <tr>
+                                <td>Volkswagen</td>
+                                <td>Polo</td>
+                                <td>2023</td>
+                                <td>MNO-7890</td>
+                                <td><span class="tag tag-rented">Rented</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
 
 </body>
 </html>

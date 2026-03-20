@@ -1,35 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Pro - Login</title>
+    <link rel="stylesheet" href="../css/ui.css">
     <script src="../JS/cliente.js" defer></script>
 </head>
 
 <body>
+    <main class="auth-wrapper">
+        <section class="auth-box">
+            <header class="auth-header">
+                <div class="logo">RC</div>
+                <h1 class="auth-title">RentCar Pro</h1>
+                <p class="auth-subtitle">Sign in to your account</p>
+            </header>
 
-<h2>Login</h2>
+            <form class="card" onsubmit="event.preventDefault(); autenticar_login();">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" placeholder="you@example.com" id="email" required>
+                </div>
 
-<form onsubmit="event.preventDefault(); autenticar_login();">
+                <div class="field" style="margin-top:16px;">
+                    <label for="senha">Password</label>
+                    <input type="password" placeholder="********" id="senha" required>
+                </div>
 
-<label>Email</label>
-<br>
-<input type="email" placeholder="Digite seu email" id="email">
+                <button class="btn" type="submit">Sign In</button>
 
-<br><br>
-
-<label>Senha</label>
-<br>
-<input type="password" placeholder="Digite sua senha" id="senha">
-
-<br><br>
-
-<button type="submit">Entrar</button>
-
-</form>
-
-<br>
-
-<a href="cadastro_cliente.html">Criar conta</a>
+                <p class="auth-footer">
+                    Don't have an account?
+                    <a href="cadastro_cliente.html">Create account</a>
+                </p>
+            </form>
+        </section>
+    </main>
 
 </body>
 </html>

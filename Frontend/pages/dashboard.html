@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Pro - Dashboard</title>
+    <link rel="stylesheet" href="../css/ui.css">
 </head>
 
 <body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">RC</div>
+                <span>RentCar Pro</span>
+            </div>
 
-<h1>Painel do Sistema</h1>
+            <nav>
+                <ul class="menu">
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="listar_veiculos.html">Vehicles</a></li>
+                    <li><a href="cadastro_veiculo.html">New Vehicle</a></li>
+                </ul>
+            </nav>
 
-<ul>
+            <a class="logout" href="login.html">Logout</a>
+        </aside>
 
-<li>
-<a href="cadastro_cliente.html">Cadastrar Cliente</a>
-</li>
+        <main class="main">
+            <header class="topbar">Car Rental Management</header>
 
-<li>
-<a href="cadastro_veiculo.html">Cadastrar Veículo</a>
-</li>
+            <section class="content">
+                <h1>Dashboard</h1>
+                <p>Overview of your fleet</p>
 
-<li>
-<a href="listar_veiculos.html">Listar Veículos</a>
-</li>
-
-</ul>
+                <div class="stats">
+                    <article class="stat">
+                        <div class="stat-title">Total Vehicles</div>
+                        <div class="stat-value">24</div>
+                    </article>
+                    <article class="stat">
+                        <div class="stat-title">Available</div>
+                        <div class="stat-value">15</div>
+                    </article>
+                    <article class="stat">
+                        <div class="stat-title">Rented</div>
+                        <div class="stat-value">7</div>
+                    </article>
+                    <article class="stat">
+                        <div class="stat-title">Maintenance</div>
+                        <div class="stat-value">2</div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
 
 </body>
 </html>
