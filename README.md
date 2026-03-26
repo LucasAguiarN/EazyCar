@@ -1,12 +1,33 @@
-<h1 align="center"; style="font-weight: bold;">Aluguel de Carros</h1>
+<h1 align="center"; style="font-weight: bold;">Eazy Car</h1>
 
 <h3 align="center"><img  alt="Faculdade Impacta" width = "400px" src="https://www.impacta.edu.br/themes/wc_agenciar3/images/logo-new.png"></h3>
+
+<p>
+    <img src="https://img.shields.io/badge/Status-Inicio_Desenvolvimento-yellow" alt="Status = Inicio Desenvolvimento">
+    <img src="https://img.shields.io/badge/Documentação-Em_Andamento-yellow" alt="Documentação: Em Andamento">
+    <img src="https://img.shields.io/badge/License-MIT-blue" alt="License = MIT">
+</p>
+
+<br>
+
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 <br>
 
 <p align="center">
-    <a href="#sobre">Sobre</a> •
+    <a href="#sobre">Sobre</a> • 
     <a href="#grupo">Integrantes do Grupo</a> •
+    <a href="#requisitos">Requisitos</a> •
+    <a href="#arquitetura">Arquitetura</a> •
+    <a href="#how-it-works">Funcionalidades</a> •
+    <a href="#interface">Interface</a> •
+    <a href="#endpoints">Endpoints da API</a> •
     <a href="#licença">Licença</a>
 </p>
 
@@ -48,6 +69,12 @@ Projeto da Disciplina de Software Product: Analysis & Specification, ministrada 
     </td>
   </tr>
 </table>
+
+<h2 id="requisitos">📦 Requisitos</h2>
+<h2 id="arquitetura">🧩 Arquitetura do Sistema</h2>
+<h2 id="how-it-works">⚙️ Funcionalidades</h2>
+<h2 id="interface">🖥️ Interface</h2>
+<h2 id="endpoints">🛠️ Endpoints da API</h2>
 
 <h2 id="licença">📜 Licença</h2>
 Este projeto é para fins educacionais e está disponível sob a <a href="./LICENSE">Licença MIT.</a>
