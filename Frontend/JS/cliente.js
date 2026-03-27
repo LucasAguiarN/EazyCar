@@ -16,6 +16,29 @@ function validar_dados() {
     enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, numero);
 }
 
+async function buscar_endereco() {
+    let cep = document.getElementById("cep").value;
+    try{
+        let request = await fetch ("https://viacep.com.br/ws/"+cep+"/json/");        
+        if (!request.ok){
+            throw new Error("Erro!\nStatus "+response.status);
+        }
+        let resposta = await request.json();
+        if (resposta.logradouro == undefined){
+            alert("CEP Inválido!");
+            document.getElementById("cep").value = "";
+        }
+        else{
+            document.getElementById("endereco").value = resposta.logradouro;
+        }
+    }
+    catch(error){
+        document.getElementById("cep").value = "";
+        alert("CEP Inválido!");
+        console.log(error);
+    }
+}
+
 async function enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, numero) {
     let complemento = document.getElementById("complemento").value;
 
