@@ -1,3 +1,7 @@
+document.getElementById("cep").addEventListener("change", (event) => {
+    buscar_endereco(event.target.value);
+});
+
 function validar_dados() {
     let nome = document.getElementById("nome").value;
     let email = document.getElementById("email").value;
@@ -71,44 +75,6 @@ async function enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, 
 
         alert("Cadastro realizado com sucesso!");
         window.location.href = "../pages/login.html";
-
-    } catch (error) {
-        console.error("Erro:", error);
-        alert(error.message);
-    }
-}
-
-async function autenticar_login() {
-    let email = document.getElementById("email").value;
-    let senha = document.getElementById("senha").value;
-
-    if (!email || !senha) {
-        alert("Preencha email e senha!");
-        return;
-    }
-
-    let dados = {
-        email: email,
-        senha: senha
-    };
-
-    try {
-        let request = await fetch("http://localhost:5000/clienteslogin", {
-            method: "POST",
-            body: JSON.stringify(dados),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        let resposta = await request.json();
-
-        if (!request.ok) {
-            throw new Error(resposta.mensagem || "Email ou senha inválidos");
-        }
-
-        alert("Login realizado com sucesso!");
-        window.location.href = "../pages/dashboard.html";
 
     } catch (error) {
         console.error("Erro:", error);
