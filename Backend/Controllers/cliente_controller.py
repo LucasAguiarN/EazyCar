@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy import or_
 import bcrypt
@@ -72,9 +72,6 @@ class ClienteController:
 
         if not email or not senha:
             return jsonify({"mensagem": "Email e senha são obrigatórios!"}), 400
-        
-        if not bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
-            return None
 
         cliente = Cliente.query.filter_by(email=email).first()
         if cliente and bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
