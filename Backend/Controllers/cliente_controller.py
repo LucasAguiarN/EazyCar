@@ -1,6 +1,7 @@
 from flask import jsonify, request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy import or_
-from werkzeug.security import check_password_hash, generate_password_hash
+import bcrypt
 from Backend.Models.data_base import db
 from Backend.Models.cliente import Cliente
 
@@ -28,12 +29,13 @@ class ClienteController:
         if cliente_existente:
             return jsonify({"mensagem": "CPF ou email já cadastrado!"}), 409
 
+        hashed_password = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
         try:
             novo_cliente = Cliente(
                 nome=nome,
                 cpf=cpf,
                 email=email,
-                senha=generate_password_hash(senha),
+                senha=hashed_password,
                 celular=celular,
                 cep=cep,
                 endereco=endereco,
@@ -70,24 +72,52 @@ class ClienteController:
 
         if not email or not senha:
             return jsonify({"mensagem": "Email e senha são obrigatórios!"}), 400
+        
+        if not bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
+            return None
 
         cliente = Cliente.query.filter_by(email=email).first()
-        if cliente and (
-            check_password_hash(cliente.senha, senha) if cliente.senha else False
-        ):
-            return jsonify({"mensagem": "Login realizado com sucesso!"}), 200
-
-        # Compatibilidade temporária com registros antigos (senha em texto puro).
-        if cliente and cliente.senha == senha:
-            return jsonify({"mensagem": "Login realizado com sucesso!"}), 200
+        if cliente and bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
+            token = create_access_token(identity=cliente.id)
+            return make_response(jsonify({
+                "mensagem": "Login realizado com sucesso",
+                "token": token
+        }), 200)
 
         return jsonify({"mensagem": "Email ou senha inválidos!"}), 401
-        
+
+    @jwt_required()
     @staticmethod
-    def deletar_cliente(email):
-        cliente = Cliente.query.filter_by(email=email).first()
+    def atualizar_cliente():
+        current_id = get_jwt_identity()
+        cliente = Cliente.query.filter_by(id=current_id).first()
         if not cliente:
-            return jsonify({"mensagem": "Email não cadastrado!"}), 404
+            return jsonify({"mensagem": "Cliente não encontrado!"}), 404
+
+        dados = request.get_json(silent=True) or {}
+        cliente.nome = dados.get('nome', cliente.nome)
+        cliente.email = dados.get('email', cliente.email)
+        cliente.celular = dados.get('celular', cliente.celular)
+        cliente.cep = dados.get("cep", cliente.cep)
+        cliente.endereco = dados.get("endereco", cliente.endereco)
+        cliente.numero = dados.get("numero", cliente.numero)
+        cliente.complemento = dados.get("complemento", cliente.complemento)
+
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            return jsonify({"mensagem": "Erro ao atualizar cliente."}), 500
+
+        return jsonify({"mensagem": "Cliente atualizado com sucesso!"}), 200
+
+    @jwt_required()
+    @staticmethod
+    def deletar_cliente():
+        current_id = get_jwt_identity()
+        cliente = Cliente.query.filter_by(id=current_id).first()
+        if not cliente:
+            return jsonify({"mensagem": "Cliente não encontrado!"}), 404
         
         db.session.delete(cliente)
         db.session.commit()
