@@ -96,6 +96,7 @@ class ClienteController:
 
         dados = request.get_json(silent=True) or {}
         cliente.nome = dados.get('nome', cliente.nome)
+        cliente.cpf = dados.get('cpf', cliente.cpf) 
         cliente.email = dados.get('email', cliente.email)
         cliente.celular = dados.get('celular', cliente.celular)
         cliente.cep = dados.get("cep", cliente.cep)
