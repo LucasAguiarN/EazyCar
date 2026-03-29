@@ -75,7 +75,7 @@ class ClienteController:
 
         cliente = Cliente.query.filter_by(email=email).first()
         if cliente and bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
-            token = create_access_token(identity=cliente.id)
+            token = create_access_token(identity=str(cliente.id))
             return make_response(jsonify({
                 "mensagem": "Login realizado com sucesso",
                 "token": token
@@ -86,7 +86,7 @@ class ClienteController:
     @jwt_required()
     @staticmethod
     def atualizar_cliente():
-        current_id = get_jwt_identity()
+        current_id = int(get_jwt_identity())
         cliente = Cliente.query.filter_by(id=current_id).first()
         if not cliente:
             return jsonify({"mensagem": "Cliente não encontrado!"}), 404
@@ -112,7 +112,7 @@ class ClienteController:
     @jwt_required()
     @staticmethod
     def deletar_cliente():
-        current_id = get_jwt_identity()
+        current_id = int(get_jwt_identity())
         cliente = Cliente.query.filter_by(id=current_id).first()
         if not cliente:
             return jsonify({"mensagem": "Cliente não encontrado!"}), 404

@@ -7,9 +7,10 @@ from Backend.routes import configurar_rotas
 def create_app():
 
     app = Flask(__name__)
+    
     CORS(app)
 
-    app.config["JWT_SECRET_KEY"] = "super-secret-key"
+    app.config["JWT_SECRET_KEY"] = "qHE3VaIhX0UPH6OQHuVDBe38ktKxAFfYJzMYW2bPkr4txcXVvPvNpagPHfxKMgv7"
     jwt = JWTManager(app)
 
     iniciar_db(app)
