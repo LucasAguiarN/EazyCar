@@ -129,7 +129,7 @@ async function atualizar_cadastro() {
 
 function deslogar() {
     localStorage.clear();
-    window.location.href = "../pages/login.html";
+    window.location.href = "../pages/Cliente/login.html";
 }
 
 async function deletar_conta() {
