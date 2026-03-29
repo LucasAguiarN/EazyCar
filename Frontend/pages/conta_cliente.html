@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Title</title>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='../JS/conta_cliente.js'></script>
+    <link rel='stylesheet' type='text/css' media='screen' href='../css/ui.css'>
+    <script src='../JS/conta_cliente.js' defer></script>
 </head>
 <body>
-    <button class="btn" onclick="deletar_conta()">Teste Deletar Conta</button>
+    <button class="btn" id="btn_deletar">Teste Deletar Conta</button>
 
     <form class="card" onsubmit="event.preventDefault(); atualizar_conta();">
         <div class="form-grid">
@@ -53,12 +53,7 @@
             </div>
         </div>
 
-                <button class="btn" type="submit">Criar Conta</button>
-
-                <p class="auth-footer">
-                    Já tem uma conta?
-                    <a href="login.html">Entrar</a>
-                </p>
+                <button class="btn" type="submit">Atualizar Conta</button>
             </form>
 </body>
 </html>
