@@ -17,9 +17,9 @@ def configurar_rotas(app):
     def listar_clientes():
         return ClienteController.listar_clientes()
 
-    @app.route('/clientes/<cpf>', methods=['GET'])
-    def exibir_cliente(cpf):
-        return ClienteController.exibir_cliente(cpf)
+    @app.route('/clientes/conta', methods=['GET'])
+    def exibir_cliente():
+        return ClienteController.exibir_cliente()
     
     @app.route('/clientes/login', methods=['POST'])
     def login_cliente():

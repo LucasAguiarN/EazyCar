@@ -8,52 +8,72 @@
     <script src='../JS/conta_cliente.js' defer></script>
 </head>
 <body>
-    <button class="btn" id="btn_deletar">Teste Deletar Conta</button>
-
-    <form class="card" onsubmit="event.preventDefault(); atualizar_conta();">
+    <button class="btn" id="btn_deslogar">Deslogar</button>
+    <div id="dados_conta">
+        <h1>Minha Conta</h1>
+            <p>Nome</p>
+            <p id="nome_exibido">Nome Completo</p>
+            <p>CPF</p>
+            <p id="cpf_exibido">CPF</p>
+            <p>Email</p>
+            <p id="email_exibido">Email</p>
+            <p>Celular</p>
+            <p id="celular_exibido">Celular</p>
+            <p>CEP</p>
+            <p id="cep_exibido">CEP</p>
+            <p>Endereço</p>
+            <p id="endereco_exibido">Endereço</p>
+            <p>Número</p>
+            <p id="numero_exibido">Número</p>
+            <p>Complemento</p>
+            <p id="complemento_exibido">Complemento</p>
+            <button class="btn" id="btn_editar">Editar Conta</button>
+    </div>
+    <form id="form_editar" class="card" onsubmit="event.preventDefault(); atualizar_cadastro();">
         <div class="form-grid">
             <div class="field">
                 <label for="nome">Nome Completo</label>
-                <input type="text" id="nome" placeholder="Seu Nome" required>
+                <input type="text" id="nome_editar" placeholder="Seu Nome" required>
             </div>
 
             <div class="field">
                 <label for="cpf">CPF</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00" required>
+                <input type="text" id="cpf_editar" placeholder="000.000.000-00" required>
             </div>
 
             <div class="field">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="usuario@exemplo.com" required>
+                <input type="email" id="email_editar" placeholder="usuario@exemplo.com" required>
             </div>
 
             <div class="field">
                 <label for="celular">Celular</label>
-                <input type="text" id="celular" placeholder="(00) 00000-0000" required>
+                <input type="text" id="celular_editar" placeholder="(00) 00000-0000" required>
             </div>
 
             <div class="field">
                 <label for="cep">CEP</label>
-                <input type="text" id="cep" placeholder="00000-000" required onchange="buscar_endereco()">
+                <input type="text" id="cep_editar" placeholder="00000-000" required onchange="buscar_endereco()">
             </div>
 
             <div class="field field-full">
                 <label for="endereco">Endereço</label>
-                <input type="text" id="endereco" placeholder="Rua/Avenida" required>
+                <input type="text" id="endereco_editar" placeholder="Rua/Avenida" required>
             </div>
 
             <div class="field">
                 <label for="numero">Número</label>
-                <input type="number" id="numero" placeholder="123" required>
+                <input type="number" id="numero_editar" placeholder="123" required>
             </div>
 
             <div class="field">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" placeholder="">
+                <input type="text" id="complemento_editar" placeholder="">
             </div>
         </div>
 
-                <button class="btn" type="submit">Atualizar Conta</button>
-            </form>
+            <button class="btn" type="submit">Atualizar Conta</button>
+    </form>
+    <button class="btn" id="btn_deletar">Deletar Conta</button>
 </body>
 </html>

@@ -51,9 +51,11 @@ class ClienteController:
 
         return jsonify({"mensagem": "Cadastro realizado com sucesso!"}), 201
     
+    @jwt_required()
     @staticmethod
-    def exibir_cliente(cpf):
-        cliente = Cliente.query.filter_by(cpf=cpf).first()
+    def exibir_cliente():
+        current_id = int(get_jwt_identity())
+        cliente = Cliente.query.filter_by(id=current_id).first()
         if cliente:
             return jsonify(cliente.para_dicionario()), 200
         return jsonify({"mensagem": "CPF não encontrado!"}), 404
