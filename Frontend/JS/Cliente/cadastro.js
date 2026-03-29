@@ -74,7 +74,7 @@ async function enviar_cadastro(nome, email, cpf, senha, celular, cep, endereco, 
         }
 
         alert("Cadastro realizado com sucesso!");
-        window.location.href = "../pages/Cliente/login.html";
+        window.location.href = "../../pages/Cliente/login.html";
 
     } catch (error) {
         console.error("Erro:", error);

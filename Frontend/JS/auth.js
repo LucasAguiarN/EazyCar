@@ -19,7 +19,7 @@ async function autenticar_login() {
     }
     else{
         url = "http://localhost:5000/clientes/login";
-        href_logar ='../pages/Cliente/conta_cliente.html';
+        href_logar ='../../pages/Cliente/conta.html';
     }
 
     try {
