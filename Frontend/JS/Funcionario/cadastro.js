@@ -31,7 +31,7 @@ async function enviar_cadastro() {
         }
 
         alert("Cadastro realizado com sucesso!");
-        window.location.href = "../pages/login_sistema.html";
+        window.location.href = "../../pages/Funcionário/login.html";
 
     } catch (error) {
         console.error("Erro:", error);
