@@ -58,7 +58,7 @@ class ClienteController:
         cliente = Cliente.query.filter_by(id=current_id).first()
         if cliente:
             return jsonify(cliente.para_dicionario()), 200
-        return jsonify({"mensagem": "CPF não encontrado!"}), 404
+        return jsonify({"mensagem": "Cliente não encontrado!"}), 404
 
     @staticmethod
     def listar_clientes():
