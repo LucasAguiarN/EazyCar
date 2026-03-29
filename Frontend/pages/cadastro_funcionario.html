@@ -16,7 +16,7 @@
                 <h1 class="auth-title">Cadastrar Funcionário</h1>
             </header>
 
-            <form class="card" onsubmit="event.preventDefault(); validar_dados();">
+            <form class="card" onsubmit="event.preventDefault(); enviar_cadastro();">
                 <div class="form-grid">
                     <div class="field">
                         <label for="nome">Nome Completo</label>
@@ -50,6 +50,10 @@
                 </div>
 
                 <button class="btn" type="submit">Cadastrar Funcionário</button>
+
+                <p class="auth-footer">
+                    Já tem uma conta?
+                    <a href="login_sistema.html">Entrar</a>
                 </p>
             </form>
         </section>

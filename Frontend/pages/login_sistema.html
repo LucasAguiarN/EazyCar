@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eazy Car - Logar</title>
+    <link rel="stylesheet" href="../css/ui.css">
+    <script src="../JS/auth.js" defer></script>
+</head>
+
+<body>
+    <main class="auth-wrapper">
+        <section class="auth-box">
+            <header class="auth-header">
+                <div class="logo">EC</div>
+                <h1 class="auth-title">Eazy Car</h1>
+                <p class="auth-subtitle">Acesse sua Conta</p>
+            </header>
+
+            <form class="card" onsubmit="event.preventDefault(); autenticar_login();">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" placeholder="usuario@exemplo.com" id="email" required>
+                </div>
+
+                <div class="field" style="margin-top:16px;">
+                    <label for="senha">Senha</label>
+                    <input type="password" placeholder="********" id="senha" required>
+                </div>
+
+                <button class="btn" type="submit">Entrar</button>
+
+                <p class="auth-footer">
+                    Não tem uma conta?
+                    <a href="cadastro_funcionario.html">Criar Conta</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>
