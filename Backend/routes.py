@@ -1,6 +1,7 @@
 from flask import jsonify, make_response, request
 from Backend.Controllers.cliente_controller import ClienteController
 from Backend.Controllers.funcionario_controller import FuncionarioController
+from Backend.Controllers.veiculo_controller import VeiculoController
 
 def configurar_rotas(app):
     
@@ -61,3 +62,24 @@ def configurar_rotas(app):
     @app.route('/funcionarios/conta', methods=['DELETE'])
     def deletar_funcionario():
         return FuncionarioController.deletar_funcionario()
+
+    ## Veículos (Empresa/Funcionário)
+    @app.route('/veiculos', methods=['POST'])
+    def cadastrar_veiculo():
+        return VeiculoController.cadastrar_veiculo()
+
+    @app.route('/veiculos', methods=['GET'])
+    def listar_veiculos():
+        return VeiculoController.listar_veiculos()
+
+    @app.route('/veiculos/<int:veiculo_id>', methods=['GET'])
+    def obter_veiculo(veiculo_id):
+        return VeiculoController.obter_veiculo(veiculo_id)
+
+    @app.route('/veiculos/<int:veiculo_id>', methods=['PUT'])
+    def atualizar_veiculo(veiculo_id):
+        return VeiculoController.atualizar_veiculo(veiculo_id)
+
+    @app.route('/veiculos/<int:veiculo_id>', methods=['DELETE'])
+    def deletar_veiculo(veiculo_id):
+        return VeiculoController.deletar_veiculo(veiculo_id)

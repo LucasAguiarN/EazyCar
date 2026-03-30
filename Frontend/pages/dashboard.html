@@ -3,52 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentCar Pro - Dashboard</title>
+    <title>EazyCar - Painel</title>
     <link rel="stylesheet" href="../css/ui.css">
+    <script defer src="../js/veiculos.js"></script>
 </head>
 
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="brand">
-                <div class="logo">RC</div>
-                <span>RentCar Pro</span>
+                <div class="brand-mark" aria-label="EazyCar">
+                    <span class="brand-eazy">Eazy</span><span class="brand-car">Car</span>
+                </div>
             </div>
 
             <nav>
                 <ul class="menu">
-                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
-                    <li><a href="listar_veiculos.html">Vehicles</a></li>
-                    <li><a href="cadastro_veiculo.html">New Vehicle</a></li>
+                    <li><a href="dashboard.html" class="active">Painel</a></li>
+                    <li><a href="listar_veiculos.html">Veículos</a></li>
+                    <li><a href="cadastro_veiculo.html">Novo Veículo</a></li>
                 </ul>
             </nav>
 
-            <a class="logout" href="login.html">Logout</a>
+            <a class="logout" href="login.html">Sair</a>
         </aside>
 
         <main class="main">
-            <header class="topbar">Car Rental Management</header>
+            <header class="topbar">EazyCar • Gestão de Aluguel de Carros</header>
 
             <section class="content">
-                <h1>Dashboard</h1>
-                <p>Overview of your fleet</p>
+                <h1>Painel</h1>
+                <p>Visão geral da sua frota</p>
 
                 <div class="stats">
                     <article class="stat">
-                        <div class="stat-title">Total Vehicles</div>
-                        <div class="stat-value">24</div>
+                        <div class="stat-title">Total de Veículos</div>
+                        <div class="stat-value" id="stat_total">—</div>
                     </article>
                     <article class="stat">
-                        <div class="stat-title">Available</div>
-                        <div class="stat-value">15</div>
+                        <div class="stat-title">Disponíveis</div>
+                        <div class="stat-value" id="stat_disponiveis">—</div>
                     </article>
                     <article class="stat">
-                        <div class="stat-title">Rented</div>
-                        <div class="stat-value">7</div>
+                        <div class="stat-title">Alugados</div>
+                        <div class="stat-value" id="stat_alugados">—</div>
                     </article>
                     <article class="stat">
-                        <div class="stat-title">Maintenance</div>
-                        <div class="stat-value">2</div>
+                        <div class="stat-title">Manutenção</div>
+                        <div class="stat-value" id="stat_manutencao">—</div>
                     </article>
                 </div>
             </section>

@@ -3,69 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentCar Pro - New Vehicle</title>
+    <title>EazyCar - Novo Veículo</title>
     <link rel="stylesheet" href="../css/ui.css">
+    <script defer src="../js/veiculos.js"></script>
 </head>
 
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="brand">
-                <div class="logo">RC</div>
-                <span>RentCar Pro</span>
+                <div class="brand-mark" aria-label="EazyCar">
+                    <span class="brand-eazy">Eazy</span><span class="brand-car">Car</span>
+                </div>
             </div>
 
             <nav>
                 <ul class="menu">
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="listar_veiculos.html">Vehicles</a></li>
-                    <li><a href="cadastro_veiculo.html" class="active">New Vehicle</a></li>
+                        <li><a href="dashboard.html">Painel</a></li>
+                        <li><a href="listar_veiculos.html">Veículos</a></li>
+                        <li><a href="cadastro_veiculo.html" class="active">Novo Veículo</a></li>
                 </ul>
             </nav>
 
-            <a class="logout" href="login.html">Logout</a>
+                <a class="logout" href="login.html">Sair</a>
         </aside>
 
         <main class="main">
-            <header class="topbar">Car Rental Management</header>
+            <header class="topbar">EazyCar • Gestão de Aluguel de Carros</header>
 
             <section class="content">
-                <h1>New Vehicle</h1>
-                <p>Add a car to your fleet</p>
+                <h1>Novo Veículo</h1>
+                <p>Adicione um carro à sua frota</p>
 
                 <form class="card">
                     <div class="form-grid">
                         <div class="field">
-                            <label for="marca">Brand</label>
-                            <input type="text" id="marca" placeholder="Toyota">
+                            <label for="marca">Marca</label>
+                            <input type="text" id="marca" placeholder="Toyota" required>
                         </div>
 
                         <div class="field">
-                            <label for="modelo">Model</label>
-                            <input type="text" id="modelo" placeholder="Corolla">
+                            <label for="modelo">Modelo</label>
+                            <input type="text" id="modelo" placeholder="Corolla" required>
                         </div>
 
                         <div class="field">
-                            <label for="ano">Year</label>
-                            <input type="number" id="ano" placeholder="2024">
+                            <label for="ano">Ano</label>
+                            <input type="number" id="ano" placeholder="2024" required>
                         </div>
 
                         <div class="field">
-                            <label for="placa">Plate</label>
-                            <input type="text" id="placa" placeholder="ABC-1234">
+                            <label for="placa">Placa</label>
+                            <input type="text" id="placa" placeholder="ABC-1234" required>
                         </div>
 
                         <div class="field field-full">
                             <label for="status">Status</label>
                             <select id="status">
-                                <option>Available</option>
-                                <option>Rented</option>
-                                <option>Maintenance</option>
+                                <option value="Available">Disponível</option>
+                                <option value="Rented">Alugado</option>
+                                <option value="Maintenance">Manutenção</option>
                             </select>
                         </div>
                     </div>
 
-                    <button class="btn" type="submit">Create Vehicle</button>
+                    <button class="btn" type="submit">Cadastrar Veículo</button>
                 </form>
             </section>
         </main>

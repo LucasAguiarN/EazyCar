@@ -4,9 +4,10 @@
   --text: #111827;
   --muted: #6b7280;
   --line: #e5e7eb;
-  --primary: #27b0a5;
-  --primary-dark: #1e958c;
-  --sidebar: #0f1d3a;
+  --primary: #f28c1c; /* laranja do EazyCar */
+  --primary-dark: #d9760b;
+  --sidebar: #0f172a; /* grafite/azul escuro */
+  --brand-dark: #111827;
 }
 
 * {
@@ -121,6 +122,21 @@ input:focus {
   background: var(--primary-dark);
 }
 
+.btn.btn-inline {
+  width: auto;
+  margin-top: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.status-select {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+
 .auth-footer {
   text-align: center;
   margin-top: 16px;
@@ -160,12 +176,23 @@ input:focus {
   margin-bottom: 24px;
 }
 
-.brand .logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  margin: 0;
-  font-size: 12px;
+.brand-mark {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+.brand-mark .brand-eazy {
+  color: #e5e7eb;
+  font-weight: 800;
+}
+
+.brand-mark .brand-car {
+  color: var(--primary);
+  font-weight: 800;
 }
 
 .menu {
@@ -205,6 +232,27 @@ input:focus {
 
 .main {
   padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../assets/logo-eazycar.png.jpeg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(780px, 85%);
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.topbar,
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 .topbar {
