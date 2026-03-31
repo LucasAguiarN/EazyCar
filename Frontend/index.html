@@ -1,18 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Sistema de Aluguel de Carros</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EazyCar - O aluguel de carros sem complicações</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/ui.css">
+    <link rel="stylesheet" href="CSS/forms.css">
 </head>
-
 <body>
+    <!-- Header/Navbar -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">
+                    <img src="assets/icone_EasyCar.png" alt="EazyCar Logo" class="logo-icon">
+                    <span class="logo-text">Eazy<span class="logo-highlight">Car</span></span>
+                </a>
+            </div>
+            <nav class="navbar-menu">
+                <a href="index.html" class="nav-link active">Início</a>
+                <a href="pages/minhas_reservas.html" class="nav-link">Reservas</a>
+                <a href="pages/veiculos.html" class="nav-link">Frotas</a>
+                <a href="#deals" class="nav-link">Promoções</a>
+                <a href="pages/Cliente/conta.html" class="nav-link">Conta</a>
+                <a href="#support" class="nav-link">Suporte</a>
+            </nav>
+            <div class="navbar-auth">
+                <a href="pages/Cliente/login.html" class="btn-login">Entrar</a>
+                <a href="pages/Cliente/cadastro.html" class="btn-signup">Cadastre-se</a>
+            </div>
+        </div>
+    </header>
 
-<h1>Sistema de Aluguel de Carros</h1>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>EazyCar</h1>
+                <p>O aluguel de carros sem complicações</p>
+            </div>
+            
+            <!-- Reserve Form -->
+            <div class="reserve-form-container">
+                <h2>Reservar Agora</h2>
+                <form id="reserveForm" class="reserve-form">
+                    <div class="form-group" style="position: relative;">
+                        <label for="pickupLocation">Localização de Retirada</label>
+                        <input 
+                            type="text" 
+                            id="pickupLocation" 
+                            name="pickupLocation" 
+                            placeholder="Localização de Retirada"
+                            autocomplete="off"
+                            required
+                        >
+                        <small>Auto-sugerir com sugestões automáticas</small>
+                        <div id="pickupSuggestions" class="suggestions-list"></div>
+                    </div>
 
-<p>Bem-vindo ao sistema</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">Data de Retirada</label>
+                            <input 
+                                type="date" 
+                                id="pickupDate" 
+                                name="pickupDate" 
+                                required
+                            >
+                        </div>
 
-<a href="pages/login.html">
-    <button>Entrar no Sistema</button>
-</a>
+                        <div class="form-group">
+                            <label for="dropoffDate">Data de Devolução</label>
+                            <input 
+                                type="date" 
+                                id="dropoffDate" 
+                                name="dropoffDate" 
+                                required
+                            >
+                        </div>
+                    </div>
 
+                    <div class="form-group" style="position: relative;">
+                        <label for="dropoffLocation">Localização de Devolução</label>
+                        <div class="location-checkbox">
+                            <input 
+                                type="text" 
+                                id="dropoffLocation" 
+                                name="dropoffLocation" 
+                                placeholder="Localização de Devolução"
+                                autocomplete="off"
+                            >
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="sameAsPickup" name="sameAsPickup">
+                                <span>mesmo que retirada</span>
+                            </label>
+                        </div>
+                        <div id="dropoffSuggestions" class="suggestions-list"></div>
+                    </div>
+
+                    <button type="submit" class="btn-find-cars">ENCONTRAR CARROS</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Tipos de Carros Populares -->
+    <section class="popular-cars">
+        <div class="container">
+            <h2>Tipos de Carros Populares</h2>
+            <div class="car-types-grid">
+                <div class="car-type-card">
+                    <div class="car-icon">🚗</div>
+                    <h3>Compacto</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <div class="car-type-card">
+                    <div class="car-icon">🚙</div>
+                    <h3>SUV</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <div class="car-type-card">
+                    <div class="car-icon">🏎️</div>
+                    <h3>Luxo</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Por que EazyCar -->
+    <section class="why-eazycar">
+        <div class="container">
+            <h2>Por que EazyCar</h2>
+            <div class="why-benefits">
+                <div class="benefit-item">
+                    <span class="benefit-icon">●</span>
+                    <h3>Reserva Fácil</h3>
+                    <p>Processo simples e rápido para reservar seu carro.</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">●</span>
+                    <h3>Melhores Preços</h3>
+                    <p>Os melhores preços do mercado garantidos.</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">●</span>
+                    <h3>Frota Moderna</h3>
+                    <p>Frota atualizada com veículos modernos e confortáveis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Sobre -->
+    <section class="about-section">
+        <div class="container">
+            <h2>Sobre EazyCar</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>EazyCar é o aluguel de carros sem complicações. Oferecemos os melhores serviços com segurança, rapidez e conforto para você e sua família.</p>
+                </div>
+                <div class="about-image">
+                    <img src="assets/car-about.png" alt="About EazyCar">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Parceiros -->
+    <section class="partners-section">
+        <div class="container">
+            <h2>Nossos Parceiros</h2>
+            <div class="partners-grid">
+                <div class="partner-logo">
+                    <img src="assets/ford-logo.png" alt="Ford">
+                </div>
+                <div class="partner-logo">
+                    <img src="assets/mastercard-logo.png" alt="Mastercard">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>Início</h4>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="pages/minhas_reservas.html">Reservas</a></li>
+                    <li><a href="#contact">Entre em Contato</a></li>
+                    <li><a href="#events">Eventos</a></li>
+                    <li><a href="#support">Suporte</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="pages/veiculos.html">Frotas</a></li>
+                    <li><a href="#deals">Promoções</a></li>
+                    <li><a href="pages/Cliente/conta.html">Conta</a></li>
+                    <li><a href="#support">Suporte</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Contato</h4>
+                <ul>
+                    <li><a href="tel:+123456770">📞 +123 456 6770</a></li>
+                    <li><a href="mailto:envio@eazycar.com">✉️ envio@eazycar.com</a></li>
+                </ul>
+            </div>
+            <div class="footer-column logo-footer">
+                <div class="footer-logo">
+                    <span class="logo-icon">🚗</span>
+                    <span>Eazy<span class="logo-highlight">Car</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 EazyCar. Todos os direitos reservados. | Desenvolvido por EazyCar</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="JS/config.js"></script>
+    <script src="JS/api.js"></script>
+    <script src="JS/home.js"></script>
 </body>
 </html>
