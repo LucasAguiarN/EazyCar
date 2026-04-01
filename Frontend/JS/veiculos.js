@@ -1,5 +1,13 @@
 const API_BASE = "http://localhost:5000";
 
+document.getElementById("btn_logout").addEventListener("click", deslogar);
+
+function deslogar(){
+  localStorage.clear();
+  window.location.href = "../pages/Funcionário/login.html";
+}
+
+
 function getToken() {
   return localStorage.getItem("token");
 }
