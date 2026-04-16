@@ -125,20 +125,17 @@ async function cadastrarVeiculo(event) {
 }
 
 async function carregarVeiculos() {
-  const token = requireAuth();
-  if (!token) return;
-
   const tbody = document.querySelector(".vehicles-table tbody");
   if (!tbody) return;
 
   try {
-    const resp = await fetch(`${API_BASE}/veiculos`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const resp = await fetch(`${API_BASE}/veiculos/disponiveis`);
     const json = await resp.json();
+
     if (!resp.ok) throw new Error(json.mensagem || "Erro ao listar veículos");
 
     tbody.innerHTML = "";
+
     for (const v of json) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -151,55 +148,15 @@ async function carregarVeiculos() {
       `;
 
       const tdAcoes = tr.querySelector("td:last-child");
-      const select = buildStatusSelect(v.status);
-      const btn = document.createElement("button");
-      btn.className = "btn btn-inline";
-      btn.type = "button";
-      btn.textContent = "Salvar";
 
       const btnDelete = document.createElement("button");
       btnDelete.className = "btn btn-inline";
-      btnDelete.type = "button";
       btnDelete.textContent = "Excluir";
 
-      btn.addEventListener("click", async () => {
-        const novo = select.value;
-        btn.disabled = true;
-        try {
-          await atualizarStatusVeiculo(v.id, novo);
-          const tag = tr.querySelector("td:nth-child(5) span");
-          tag.className = statusToTagClass(novo);
-          tag.textContent = statusToPt(novo);
-          alert("Status atualizado!");
-        } catch (e) {
-          console.error(e);
-          alert(e.message);
-        } finally {
-          btn.disabled = false;
-        }
-      });
-
       btnDelete.addEventListener("click", async () => {
-        const ok = confirm(`Excluir o veículo de placa ${v.placa}?`);
-        if (!ok) return;
-
-        btnDelete.disabled = true;
-        try {
-          await deletarVeiculo(v.id);
-          tr.remove();
-          alert("Veículo excluído!");
-        } catch (e) {
-          console.error(e);
-          alert(e.message);
-        } finally {
-          btnDelete.disabled = false;
-        }
+        tr.remove();
       });
 
-      tdAcoes.appendChild(select);
-      tdAcoes.appendChild(document.createTextNode(" "));
-      tdAcoes.appendChild(btn);
-      tdAcoes.appendChild(document.createTextNode(" "));
       tdAcoes.appendChild(btnDelete);
       tbody.appendChild(tr);
     }

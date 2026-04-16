@@ -20,6 +20,10 @@ def configurar_rotas(app):
     def listar_clientes():
         return ClienteController.listar_clientes()
     
+    @app.route('/veiculos/disponiveis', methods=['GET'])
+    def listar_veiculos_disponiveis():
+        return VeiculoController.listar_veiculos_disponiveis()
+
     @app.route('/clientes/login', methods=['POST'])
     def login_cliente():
         dados = request.get_json(silent=True) or {}

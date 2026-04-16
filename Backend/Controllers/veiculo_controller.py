@@ -132,4 +132,14 @@ class VeiculoController:
             return jsonify({"mensagem": "Erro ao deletar veículo."}), 500
 
         return jsonify({"mensagem": "Veículo deletado com sucesso!"}), 200
+    
+
+
+    # @jwt_required()
+    @staticmethod
+    def listar_veiculos_disponiveis():
+        veiculos = Veiculo.query.filter_by(status="Available").all()
+        return jsonify([v.para_dicionario() for v in veiculos]), 200
+    
+
 
