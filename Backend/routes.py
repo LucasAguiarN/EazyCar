@@ -2,6 +2,7 @@ from flask import jsonify, make_response, request
 from Backend.Controllers.cliente_controller import ClienteController
 from Backend.Controllers.funcionario_controller import FuncionarioController
 from Backend.Controllers.veiculo_controller import VeiculoController
+from Backend.Controllers.reserva_controller import ReservaController
 
 def configurar_rotas(app):
     
@@ -87,3 +88,12 @@ def configurar_rotas(app):
     @app.route('/veiculos/<int:veiculo_id>', methods=['DELETE'])
     def deletar_veiculo(veiculo_id):
         return VeiculoController.deletar_veiculo(veiculo_id)
+
+    ## Reservas
+    @app.route('/reservas', methods=['POST'])
+    def criar_reserva():
+        return ReservaController.criar_reserva()
+
+    @app.route('/reservas/minhas', methods=['GET'])
+    def listar_minhas_reservas():
+        return ReservaController.listar_minhas_reservas()
