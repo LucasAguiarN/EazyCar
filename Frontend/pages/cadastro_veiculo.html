@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EazyCar - Novo Veículo</title>
-    <link rel="stylesheet" href="../css/ui.css">
-    <script defer src="../js/veiculos.js"></script>
+    <link rel="stylesheet" href="../CSS/ui.css">
+    <script defer src="../JS/veiculos.js"></script>
 </head>
 
 <body>
@@ -19,13 +20,13 @@
 
             <nav>
                 <ul class="menu">
-                        <li><a href="dashboard.html">Painel</a></li>
-                        <li><a href="listar_veiculos.html">Veículos</a></li>
-                        <li><a href="cadastro_veiculo.html" class="active">Novo Veículo</a></li>
+                    <li><a href="dashboard.html">Painel</a></li>
+                    <li><a href="listar_veiculos.html">Veículos</a></li>
+                    <li><a href="cadastro_veiculo.html" class="active">Novo Veículo</a></li>
                 </ul>
             </nav>
 
-                <a class="logout"  href="#" id="btn_logout">Sair</a>
+            <a class="logout" href="#" id="btn_logout">Sair</a>
         </aside>
 
         <main class="main">
@@ -35,7 +36,7 @@
                 <h1>Novo Veículo</h1>
                 <p>Adicione um carro à sua frota</p>
 
-                <form class="card">
+                <form class="card" onsubmit="event.preventDefault(); cadastrar_veiculo();">
                     <div class="form-grid">
                         <div class="field">
                             <label for="marca">Marca</label>
@@ -74,4 +75,5 @@
     </div>
 
 </body>
+
 </html>

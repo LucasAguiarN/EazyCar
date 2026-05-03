@@ -1,6 +1,6 @@
 // Home Page Script - Gerencia o formulário de reserva e interações da página inicial
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeReserveForm();
     initializeLocationAutocomplete();
     initializeSameAsPickupCheckbox();
@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Inicializa o formulário de reserva
 function initializeReserveForm() {
     const form = document.getElementById('reserveForm');
-    
+
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             handleReserveSubmit();
         });
@@ -21,11 +21,11 @@ function initializeReserveForm() {
         const pickupDate = document.getElementById('pickupDate');
         const dropoffDate = document.getElementById('dropoffDate');
 
-        pickupDate.addEventListener('change', function() {
+        pickupDate.addEventListener('change', function () {
             validateDates();
         });
 
-        dropoffDate.addEventListener('change', function() {
+        dropoffDate.addEventListener('change', function () {
             validateDates();
         });
     }
@@ -55,7 +55,7 @@ function validateDates() {
     // Reset das cores
     document.getElementById('pickupDate').style.borderColor = '';
     document.getElementById('dropoffDate').style.borderColor = '';
-    
+
     return true;
 }
 
@@ -80,7 +80,7 @@ function initializeLocationAutocomplete() {
         'Porto Alegre - Aeroporto'
     ];
 
-    pickupLocationInput.addEventListener('input', function() {
+    pickupLocationInput.addEventListener('input', function () {
         const value = this.value.toLowerCase();
         if (value.length > 0) {
             const filtered = locations.filter(loc => loc.toLowerCase().includes(value));
@@ -90,7 +90,7 @@ function initializeLocationAutocomplete() {
         }
     });
 
-    dropoffLocationInput.addEventListener('input', function() {
+    dropoffLocationInput.addEventListener('input', function () {
         const value = this.value.toLowerCase();
         if (value.length > 0) {
             const filtered = locations.filter(loc => loc.toLowerCase().includes(value));
@@ -104,14 +104,14 @@ function initializeLocationAutocomplete() {
 // Exibe as sugestões de localização
 function displaySuggestions(suggestions, container, inputField) {
     container.innerHTML = '';
-    
+
     if (suggestions.length === 0) {
         container.style.display = 'none';
         return;
     }
 
     container.style.display = 'block';
-    
+
     suggestions.forEach(suggestion => {
         const div = document.createElement('div');
         div.className = 'suggestion-item';
@@ -121,15 +121,15 @@ function displaySuggestions(suggestions, container, inputField) {
         div.style.borderBottom = '1px solid #eee';
         div.style.transition = 'background-color 0.2s';
 
-        div.addEventListener('mouseover', function() {
+        div.addEventListener('mouseover', function () {
             this.style.backgroundColor = '#f5f5f5';
         });
 
-        div.addEventListener('mouseout', function() {
+        div.addEventListener('mouseout', function () {
             this.style.backgroundColor = 'white';
         });
 
-        div.addEventListener('click', function() {
+        div.addEventListener('click', function () {
             inputField.value = suggestion;
             container.innerHTML = '';
             container.style.display = 'none';
@@ -146,7 +146,7 @@ function initializeSameAsPickupCheckbox() {
     const dropoffLocationInput = document.getElementById('dropoffLocation');
 
     if (checkbox) {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             if (this.checked) {
                 dropoffLocationInput.value = pickupLocationInput.value;
                 dropoffLocationInput.disabled = true;
@@ -156,7 +156,7 @@ function initializeSameAsPickupCheckbox() {
         });
 
         // Sincroniza automaticamente se o checkbox já está marcado
-        pickupLocationInput.addEventListener('change', function() {
+        pickupLocationInput.addEventListener('change', function () {
             if (checkbox.checked) {
                 dropoffLocationInput.value = this.value;
             }
@@ -194,14 +194,14 @@ function handleReserveSubmit() {
     sessionStorage.setItem('carSearchData', JSON.stringify(searchData));
 
     // Redireciona para página de listagem de veículos
-    window.location.href = 'pages/listar_veiculos.html';
+    window.location.href = 'pages/reservar_veiculo.html';
 }
 
 // Inicializa navegação dinâmica
 function initializeNavigation() {
     // Verifica se tem token de autenticação
     const token = localStorage.getItem('token');
-    
+
     if (token) {
         // Usuário está logado - pode mostrar opções personalizadas
         console.log('Usuário autenticado');
