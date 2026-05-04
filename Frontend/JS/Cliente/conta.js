@@ -1,4 +1,22 @@
-token = localStorage.getItem('token');
+token = localStorage.getItem('token_cliente');
+if (!token) {
+    window.location.replace("login.html");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const authDiv = document.querySelector('.navbar-auth');
+    if (authDiv) {
+        authDiv.innerHTML = `
+            <span style="margin-right: 15px; color: #333; font-weight: 500;">Olá, Cliente!</span>
+            <a href="#" class="btn-signup" style="background-color: #e63946;" id="btn_deslogar_navbar">Sair</a>
+        `;
+
+        document.getElementById("btn_deslogar_navbar").addEventListener("click", (e) => {
+            e.preventDefault();
+            deslogar();
+        });
+    }
+});
 let formulario = document.getElementById("form_editar");
 formulario.style.display = "none";
 
@@ -21,7 +39,7 @@ function editar_conta() {
     let campos = ["nome", "email", "cpf", "celular", "cep", "endereco", "numero", "complemento"];
 
     for (let campo of campos) {
-        document.getElementById(`${campo}_editar`).value = 
+        document.getElementById(`${campo}_editar`).value =
             document.getElementById(`${campo}_exibido`).textContent;
     }
 }
@@ -60,22 +78,22 @@ async function carregar_dados() {
 
 async function buscar_endereco() {
     let cep = document.getElementById("cep_editar").value;
-    try{
-        let request = await fetch ("https://viacep.com.br/ws/"+cep+"/json/");        
-        if (!request.ok){
-            throw new Error("Erro!\nStatus "+response.status);
+    try {
+        let request = await fetch("https://viacep.com.br/ws/" + cep + "/json/");
+        if (!request.ok) {
+            throw new Error("Erro!\nStatus " + response.status);
         }
 
         let resposta = await request.json();
-        if (resposta.logradouro == undefined){
+        if (resposta.logradouro == undefined) {
             alert("CEP Inválido!");
             document.getElementById("cep_editar").value = "";
         }
-        else{
+        else {
             document.getElementById("endereco_editar").value = resposta.logradouro;
         }
     }
-    catch(error){
+    catch (error) {
         document.getElementById("cep_editar").value = "";
         alert("CEP Inválido!");
         console.log(error);
@@ -110,7 +128,7 @@ async function atualizar_cadastro() {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
-                }
+            }
         });
 
         let resposta = await response.json();
@@ -128,7 +146,7 @@ async function atualizar_cadastro() {
 }
 
 function deslogar() {
-    localStorage.clear();
+    localStorage.removeItem('token_cliente');
     window.location.href = "../../pages/Cliente/login.html";
 }
 

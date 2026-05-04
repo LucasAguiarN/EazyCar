@@ -193,18 +193,37 @@ function handleReserveSubmit() {
 
     sessionStorage.setItem('carSearchData', JSON.stringify(searchData));
 
-    // Redireciona para página de listagem de veículos
-    window.location.href = 'pages/reservar_veiculo.html';
+    const token = localStorage.getItem('token_cliente');
+
+    if (token) {
+        window.location.href = 'pages/reservar_veiculo.html';
+    } else {
+        showNotification('Faça login para continuar sua reserva', 'info');
+        setTimeout(() => {
+            window.location.href = 'pages/Cliente/login.html';
+        }, 1500);
+    }
 }
 
 // Inicializa navegação dinâmica
 function initializeNavigation() {
     // Verifica se tem token de autenticação
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token_cliente');
 
     if (token) {
-        // Usuário está logado - pode mostrar opções personalizadas
-        console.log('Usuário autenticado');
+        const authDiv = document.querySelector('.navbar-auth');
+        if (authDiv) {
+            authDiv.innerHTML = `
+                <span style="margin-right: 15px; color: #333; font-weight: bold;">Olá, Cliente!</span>
+                <a href="#" class="btn-signup" style="background-color: #e63946; color: white;" onclick="event.preventDefault(); localStorage.removeItem('token_cliente'); window.location.reload();">Sair</a>
+            `;
+        }
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            if (link.textContent.trim() === 'Conta') {
+                link.href = 'pages/Cliente/conta.html';
+            }
+        });
     }
 }
 

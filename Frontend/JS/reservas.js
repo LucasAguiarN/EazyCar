@@ -90,7 +90,7 @@ async function reservarVeiculo(veiculoId) {
     let confirmacao = confirm(`Resumo da Reserva:\n\nLocal: ${localRetirada}\nDias: ${dias}\nValor Total: R$ ${valorTotal.toFixed(2)}\n\nDeseja confirmar a locação?`);
     if (!confirmacao) return;
 
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem('token_cliente');
     if (!token) {
         alert("Você precisa estar logado para fazer uma reserva!");
         window.location.href = "Cliente/login.html";
@@ -119,6 +119,7 @@ async function reservarVeiculo(veiculoId) {
 
         if (request.ok) {
             alert("Sucesso! O carro foi reservado.");
+            sessionStorage.removeItem('carSearchData');
             carregarVeiculosDisponiveis();
         } else {
             alert(resposta.mensagem || "Erro ao realizar reserva.");
@@ -130,7 +131,7 @@ async function reservarVeiculo(veiculoId) {
 }
 
 async function carregarMinhasReservas() {
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem('token_cliente');
 
     if (!token) {
         alert("Você precisa estar logado para ver suas reservas.");
