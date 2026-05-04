@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (jsonDadosSalvos) {
             let searchData = JSON.parse(jsonDadosSalvos);
+
+            if (searchData.pickupLocation) {
+                document.getElementById("local_retirada").value = searchData.pickupLocation;
+            }
+            if (searchData.dropoffLocation) {
+                document.getElementById("local_devolucao").value = searchData.dropoffLocation;
+            }
             if (searchData.pickupDate) {
                 document.getElementById("data_retirada").value = searchData.pickupDate;
             }
@@ -11,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("data_devolucao").value = searchData.dropoffDate;
             }
         }
+
+        initializeLocationAutocomplete();
+
         carregarVeiculosDisponiveis();
     }
     if (document.getElementById("lista_minhas_reservas")) {
@@ -57,9 +67,11 @@ async function carregarVeiculosDisponiveis() {
 async function reservarVeiculo(veiculoId) {
     let dataRetirada = document.getElementById("data_retirada").value;
     let dataDevolucao = document.getElementById("data_devolucao").value;
+    let localRetirada = document.getElementById("local_retirada").value;
+    let localDevolucao = document.getElementById("local_devolucao").value;
 
-    if (!dataRetirada || !dataDevolucao) {
-        alert("Por favor, escolha o dia de retirada e devolução!");
+    if (!dataRetirada || !dataDevolucao || !localRetirada || !localDevolucao) {
+        alert("Por favor, preencha todos os locais e datas!");
         return;
     }
 
@@ -75,7 +87,7 @@ async function reservarVeiculo(veiculoId) {
 
     let valorTotal = dias * 150;
 
-    let confirmacao = confirm(`Resumo da Reserva:\n\nDias: ${dias}\nValor Total: R$ ${valorTotal.toFixed(2)}\n\nDeseja confirmar a locação?`);
+    let confirmacao = confirm(`Resumo da Reserva:\n\nLocal: ${localRetirada}\nDias: ${dias}\nValor Total: R$ ${valorTotal.toFixed(2)}\n\nDeseja confirmar a locação?`);
     if (!confirmacao) return;
 
     let token = localStorage.getItem('token');
@@ -88,7 +100,9 @@ async function reservarVeiculo(veiculoId) {
     let dados = {
         veiculo_id: veiculoId,
         data_retirada: dataRetirada,
-        data_devolucao: dataDevolucao
+        data_devolucao: dataDevolucao,
+        local_retirada: localRetirada,
+        local_devolucao: localDevolucao
     };
 
     try {
@@ -135,7 +149,8 @@ async function carregarMinhasReservas() {
         let container = document.getElementById("lista_minhas_reservas");
 
         if (!request.ok) {
-            container.innerHTML = "<p>Erro ao carregar reservas. Tente logar novamente.</p>";
+            let erroFlask = await request.json().catch(() => ({}));
+            container.innerHTML = `<p style="color: red;">Erro: ${erroFlask.mensagem || 'Falha interna no servidor.'} Olha o F12.</p>`;
             return;
         }
 
@@ -166,6 +181,7 @@ async function carregarMinhasReservas() {
                 <h3>${r.veiculo_nome}</h3>
                 <p><strong>Placa:</strong> ${r.veiculo_placa}</p>
                 <hr style="margin: 15px 0; border: 0.5px solid #eee;">
+                <p><strong>Local:</strong> ${r.local_retirada}</p>
                 <p><strong>Retirada:</strong> ${dataRet}</p>
                 <p><strong>Devolução:</strong> ${dataDev}</p>
                 <p style="color: #e63946; font-weight: bold; margin-top: 15px; font-size: 1.1em;">
@@ -182,4 +198,83 @@ async function carregarMinhasReservas() {
         console.error("Erro ao buscar reservas:", error);
         document.getElementById("lista_minhas_reservas").innerHTML = "<p>Falha de conexão com o servidor.</p>";
     }
+}
+
+function initializeLocationAutocomplete() {
+    const pickupLocationInput = document.getElementById('local_retirada');
+    const dropoffLocationInput = document.getElementById('local_devolucao');
+    const pickupSuggestions = document.getElementById('retiradaSuggestions');
+    const dropoffSuggestions = document.getElementById('devolucaoSuggestions');
+
+    if (!pickupLocationInput || !pickupSuggestions) return;
+
+    const locations = [
+        'São Paulo - Centro',
+        'São Paulo - Congonhas',
+        'São Paulo - Guarulhos',
+        'Diadema - Centro',
+        'São Bernardo do Campo - Paço Municipal',
+        'Santo André - Grand Plaza',
+        'Rio de Janeiro - Galeão',
+        'Belo Horizonte - Confins',
+        'Curitiba - Aeroporto',
+        'Porto Alegre - Aeroporto'
+    ];
+
+    pickupLocationInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase();
+        if (value.length > 0) {
+            const filtered = locations.filter(loc => loc.toLowerCase().includes(value));
+            displaySuggestions(filtered, pickupSuggestions, pickupLocationInput);
+        } else {
+            pickupSuggestions.innerHTML = '';
+        }
+    });
+
+    dropoffLocationInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase();
+        if (value.length > 0) {
+            const filtered = locations.filter(loc => loc.toLowerCase().includes(value));
+            displaySuggestions(filtered, dropoffSuggestions, dropoffLocationInput);
+        } else {
+            dropoffSuggestions.innerHTML = '';
+        }
+    });
+}
+
+function displaySuggestions(suggestions, container, inputField) {
+    container.innerHTML = '';
+
+    if (suggestions.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+
+    suggestions.forEach(suggestion => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.textContent = suggestion;
+        div.style.cursor = 'pointer';
+        div.style.padding = '10px';
+        div.style.borderBottom = '1px solid #eee';
+        div.style.transition = 'background-color 0.2s';
+
+        div.addEventListener('mouseover', function () {
+            this.style.backgroundColor = '#f5f5f5';
+        });
+
+        div.addEventListener('mouseout', function () {
+            this.style.backgroundColor = 'white';
+        });
+
+        div.addEventListener('click', function () {
+            inputField.value = suggestion;
+            container.innerHTML = '';
+            container.style.display = 'none';
+        });
+
+        container.appendChild(div);
+    });
 }

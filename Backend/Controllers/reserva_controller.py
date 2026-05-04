@@ -15,8 +15,10 @@ class ReservaController:
         veiculo_id = dados.get("veiculo_id")
         data_retirada_str = dados.get("data_retirada")
         data_devolucao_str = dados.get("data_devolucao")
+        local_retirada = dados.get("local_retirada")
+        local_devolucao = dados.get("local_devolucao")
 
-        if not veiculo_id or not data_retirada_str or not data_devolucao_str:
+        if not veiculo_id or not data_retirada_str or not data_devolucao_str or not local_retirada or not local_devolucao:
             return jsonify({"mensagem": "Dados incompletos!"}), 400
 
         try:
@@ -40,15 +42,16 @@ class ReservaController:
             nova_reserva = Reserva(
                 cliente_id=cliente_id,
                 veiculo_id=veiculo_id,
+                local_retirada=local_retirada,     
+                local_devolucao=local_devolucao,  
                 data_retirada=data_retirada,
                 data_devolucao=data_devolucao,
                 valor_total=valor_total
             )
             db.session.add(nova_reserva)
-        
             veiculo.status = "Rented"
-            
             db.session.commit()
+
             return jsonify({
                 "mensagem": "Reserva realizada com sucesso!",
                 "reserva": nova_reserva.to_dict()
