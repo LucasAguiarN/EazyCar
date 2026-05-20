@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   mysql:
     image: mysql:8.0.29
@@ -11,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: "123"
       MYSQL_DATABASE: aluguel_carros
     volumes:
-      - .db:/var/lib/mysql
+      - db-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123"]
       timeout: 5s
@@ -22,6 +21,7 @@ services:
     build:
       context: . 
       dockerfile: dockerfile
+    restart: unless-stopped
     ports:
       - "5000:5000"
     volumes:
@@ -30,5 +30,7 @@ services:
       FLASK_APP: run.py
       FLASK_ENV: development
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
+
+volumes:
+  db-data:

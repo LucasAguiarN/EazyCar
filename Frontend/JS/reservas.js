@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function carregarVeiculosDisponiveis() {
+    const selectedVehicleId = sessionStorage.getItem('selectedVehicleId');
+
     try {
         let request = await fetch("http://localhost:5000/veiculos/disponiveis");
         let veiculos = await request.json();
@@ -42,8 +44,12 @@ async function carregarVeiculosDisponiveis() {
         }
 
         veiculos.forEach(v => {
+            let isSelected = selectedVehicleId && Number(selectedVehicleId) === v.id;
+            let highlight = isSelected ? 'border: 3px solid #e63946; box-shadow: 0 0 20px rgba(230, 57, 70, 0.15);' : '';
             let div = document.createElement("div");
             div.className = "car-type-card";
+            div.style.cssText = highlight;
+            div.dataset.vehicleId = v.id;
             div.innerHTML = `
                 <div class="car-icon">🚗</div>
                 <h3>${v.marca} ${v.modelo}</h3>
@@ -57,6 +63,14 @@ async function carregarVeiculosDisponiveis() {
             `;
             container.appendChild(div);
         });
+
+        if (selectedVehicleId) {
+            let selectedCard = container.querySelector(`[data-vehicle-id="${selectedVehicleId}"]`);
+            if (selectedCard) {
+                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                sessionStorage.removeItem('selectedVehicleId');
+            }
+        }
 
     } catch (error) {
         console.error("Erro ao buscar veículos:", error);
@@ -174,6 +188,13 @@ async function carregarMinhasReservas() {
             let dataRet = r.data_retirada.split('-').reverse().join('/');
             let dataDev = r.data_devolucao.split('-').reverse().join('/');
 
+            let actionButton = '';
+            if (r.status === 'Active') {
+                actionButton = `<button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="realizarCheckIn(${r.id})">Check-in</button>`;
+            } else if (r.status === 'Em Uso') {
+                actionButton = `<button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="realizarCheckOut(${r.id})">Check-out</button>`;
+            }
+
             let div = document.createElement("div");
             div.className = "car-type-card";
             div.style.borderTop = "4px solid #e63946";
@@ -191,6 +212,7 @@ async function carregarMinhasReservas() {
                 <p style="margin-top: 10px; font-size: 0.9em; color: ${r.status === 'Active' ? 'green' : 'gray'};">
                     Status: <strong>${r.status}</strong>
                 </p>
+                ${actionButton}
             `;
             container.appendChild(div);
         });
@@ -198,6 +220,70 @@ async function carregarMinhasReservas() {
     } catch (error) {
         console.error("Erro ao buscar reservas:", error);
         document.getElementById("lista_minhas_reservas").innerHTML = "<p>Falha de conexão com o servidor.</p>";
+    }
+}
+
+async function realizarCheckIn(reservaId) {
+    let token = localStorage.getItem('token_cliente');
+    if (!token) {
+        alert("Você precisa estar logado para realizar o check-in.");
+        window.location.href = "Cliente/login.html";
+        return;
+    }
+
+    if (!confirm('Deseja confirmar o check-in desta reserva?')) return;
+
+    try {
+        let request = await fetch(`http://localhost:5000/reservas/${reservaId}/check-in`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        let resposta = await request.json();
+        if (request.ok) {
+            alert(resposta.mensagem || 'Check-in realizado com sucesso!');
+            carregarMinhasReservas();
+        } else {
+            alert(resposta.mensagem || 'Erro ao realizar check-in.');
+        }
+    } catch (error) {
+        console.error('Erro no check-in:', error);
+        alert('Falha de conexão ao realizar check-in.');
+    }
+}
+
+async function realizarCheckOut(reservaId) {
+    let token = localStorage.getItem('token_cliente');
+    if (!token) {
+        alert("Você precisa estar logado para realizar o check-out.");
+        window.location.href = "Cliente/login.html";
+        return;
+    }
+
+    if (!confirm('Deseja confirmar o check-out desta reserva?')) return;
+
+    try {
+        let request = await fetch(`http://localhost:5000/reservas/${reservaId}/check-out`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        let resposta = await request.json();
+        if (request.ok) {
+            alert(resposta.mensagem || 'Check-out realizado com sucesso!');
+            carregarMinhasReservas();
+        } else {
+            alert(resposta.mensagem || 'Erro ao realizar check-out.');
+        }
+    } catch (error) {
+        console.error('Erro no check-out:', error);
+        alert('Falha de conexão ao realizar check-out.');
     }
 }
 

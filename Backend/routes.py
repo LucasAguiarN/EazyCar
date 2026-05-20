@@ -97,3 +97,11 @@ def configurar_rotas(app):
     @app.route('/reservas/minhas', methods=['GET'])
     def listar_minhas_reservas():
         return ReservaController.listar_minhas_reservas()
+
+    @app.route('/reservas/<int:reserva_id>/check-in', methods=['POST'])
+    def check_in_reserva(reserva_id):
+        return ReservaController.check_in_reserva(reserva_id)
+
+    @app.route('/reservas/<int:reserva_id>/check-out', methods=['POST'])
+    def check_out_reserva(reserva_id):
+        return ReservaController.check_out_reserva(reserva_id)

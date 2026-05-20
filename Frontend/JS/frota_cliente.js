@@ -25,7 +25,7 @@ async function carregarFrotaParaClientes() {
                 <p><strong>Placa:</strong> ${v.placa}</p>
                 <p style="color: #e63946; font-weight: bold; margin-top: 10px;">Diária: R$ 150,00</p>
                 
-                <button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="irParaReserva()">
+                <button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="irParaReserva(${v.id})">
                     Alugar Agora
                 </button>
             `;
@@ -38,6 +38,7 @@ async function carregarFrotaParaClientes() {
     }
 }
 
-function irParaReserva() {
-    window.location.href = "../index.html";
+function irParaReserva(veiculoId) {
+    sessionStorage.setItem('selectedVehicleId', veiculoId);
+    window.location.href = "reservar_veiculo.html";
 }

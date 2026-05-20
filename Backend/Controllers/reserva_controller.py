@@ -82,3 +82,59 @@ class ReservaController:
             resultado.append(dados_reserva)
             
         return jsonify(resultado), 200
+
+    @jwt_required()
+    @staticmethod
+    def check_in_reserva(reserva_id):
+        """
+        Realiza o check-in de uma reserva (retirada do veículo)
+        """
+        cliente_id = int(get_jwt_identity())
+        try:
+            reserva = Reserva.query.filter_by(id=reserva_id, cliente_id=cliente_id).first()
+            if not reserva:
+                return jsonify({"mensagem": "Reserva não encontrada ou acesso não autorizado."}), 404
+
+            if reserva.status != "Active":
+                return jsonify({"mensagem": f"Apenas reservas com status 'Active' podem fazer check-in. Status atual: {reserva.status}"}), 400
+
+            reserva.data_hora_check_in = datetime.now()
+            reserva.status = "Em Uso"
+
+            db.session.commit()
+
+            return jsonify({"mensagem": "Check-in realizado com sucesso!", "reserva": reserva.to_dict()}), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"mensagem": f"Erro ao realizar check-in: {str(e)}"}), 500
+
+    @jwt_required()
+    @staticmethod
+    def check_out_reserva(reserva_id):
+        """
+        Realiza o check-out de uma reserva (devolução do veículo)
+        """
+        cliente_id = int(get_jwt_identity())
+        try:
+            reserva = Reserva.query.filter_by(id=reserva_id, cliente_id=cliente_id).first()
+            if not reserva:
+                return jsonify({"mensagem": "Reserva não encontrada ou acesso não autorizado."}), 404
+
+            if reserva.status != "Em Uso":
+                return jsonify({"mensagem": f"Apenas reservas em uso podem fazer check-out. Status atual: {reserva.status}"}), 400
+
+            reserva.data_hora_check_out = datetime.now()
+            reserva.status = "Concluído"
+
+            veiculo = Veiculo.query.filter_by(id=reserva.veiculo_id).first()
+            if veiculo:
+                veiculo.status = "Available"
+
+            db.session.commit()
+
+            return jsonify({"mensagem": "Check-out realizado com sucesso!", "reserva": reserva.to_dict()}), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"mensagem": f"Erro ao realizar check-out: {str(e)}"}), 500
