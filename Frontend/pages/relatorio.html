@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EazyCar - Relatório de Receitas</title>
+    <link rel="stylesheet" href="../CSS/ui.css">
+    <script defer src="../JS/relatorio.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark" aria-label="EazyCar">
+                    <span class="brand-eazy">Eazy</span><span class="brand-car">Car</span>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="menu">
+                    <li><a href="dashboard.html">Painel</a></li>
+                    <li><a href="listar_veiculos.html">Veículos</a></li>
+                    <li><a href="cadastro_veiculo.html">Novo Veículo</a></li>
+                    <li><a href="relatorio.html" class="active">Relatório</a></li>
+                </ul>
+            </nav>
+
+            <a class="logout" href="#" id="btn_logout">Sair</a>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">EazyCar • Gestão de Aluguel de Carros</header>
+
+            <section class="content">
+                <h1>Relatório de Receitas</h1>
+                <p>Filtre por período para visualizar as receitas geradas</p>
+
+                <form class="card" id="form_relatorio" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+                    <div class="field" style="flex:1;min-width:160px">
+                        <label for="data_inicio">Data inicial</label>
+                        <input type="date" id="data_inicio" required>
+                    </div>
+                    <div class="field" style="flex:1;min-width:160px">
+                        <label for="data_fim">Data final</label>
+                        <input type="date" id="data_fim" required>
+                    </div>
+                    <button class="btn" type="submit" style="margin-bottom:0">Gerar Relatório</button>
+                </form>
+
+                <div id="resultado" style="margin-top:1.5rem"></div>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>

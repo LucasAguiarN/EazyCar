@@ -4,7 +4,8 @@ from datetime import datetime
 from Backend.Models.data_base import db
 from Backend.Models.reserva import Reserva
 from Backend.Models.veiculo import Veiculo
-from Backend.decorators import cliente_required
+from Backend.Models.cliente import Cliente
+from Backend.decorators import cliente_required, funcionario_required
 
 class ReservaController:
     @cliente_required
@@ -138,3 +139,66 @@ class ReservaController:
         except Exception as e:
             db.session.rollback()
             return jsonify({"mensagem": f"Erro ao realizar check-out: {str(e)}"}), 500
+
+    @funcionario_required
+    @staticmethod
+    def relatorio_receitas():
+        data_inicio_str = request.args.get("data_inicio")
+        data_fim_str    = request.args.get("data_fim")
+
+        if not data_inicio_str or not data_fim_str:
+            return jsonify({"mensagem": "Parâmetros data_inicio e data_fim são obrigatórios."}), 400
+
+        try:
+            data_inicio = datetime.strptime(data_inicio_str, "%Y-%m-%d").date()
+            data_fim    = datetime.strptime(data_fim_str,    "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({"mensagem": "Formato de data inválido. Use YYYY-MM-DD."}), 400
+
+        if data_fim < data_inicio:
+            return jsonify({"mensagem": "data_fim deve ser igual ou posterior a data_inicio."}), 400
+
+        reservas = (
+            Reserva.query
+            .filter(Reserva.data_retirada >= data_inicio, Reserva.data_retirada <= data_fim)
+            .order_by(Reserva.data_retirada.asc())
+            .all()
+        )
+
+        receita_total = 0.0
+        por_status: dict[str, int] = {}
+        lista = []
+
+        for r in reservas:
+            receita_total += r.valor_total or 0.0
+            por_status[r.status] = por_status.get(r.status, 0) + 1
+
+            veiculo = Veiculo.query.filter_by(id=r.veiculo_id).first()
+            cliente = Cliente.query.filter_by(id=r.cliente_id).first()
+
+            lista.append({
+                "id":             r.id,
+                "cliente_nome":   cliente.nome  if cliente else "—",
+                "veiculo_nome":   f"{veiculo.marca} {veiculo.modelo}" if veiculo else "—",
+                "veiculo_placa":  veiculo.placa if veiculo else "—",
+                "data_retirada":  r.data_retirada.strftime("%Y-%m-%d"),
+                "data_devolucao": r.data_devolucao.strftime("%Y-%m-%d"),
+                "local_retirada":  r.local_retirada,
+                "local_devolucao": r.local_devolucao,
+                "valor_total":    r.valor_total,
+                "status":         r.status,
+            })
+
+        total_reservas = len(lista)
+        ticket_medio   = (receita_total / total_reservas) if total_reservas else 0.0
+
+        return jsonify({
+            "periodo":  {"data_inicio": data_inicio_str, "data_fim": data_fim_str},
+            "resumo": {
+                "total_reservas": total_reservas,
+                "receita_total":  round(receita_total, 2),
+                "ticket_medio":   round(ticket_medio, 2),
+                "por_status":     por_status,
+            },
+            "reservas": lista,
+        }), 200

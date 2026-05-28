@@ -105,3 +105,8 @@ def configurar_rotas(app):
     @app.route('/reservas/<int:reserva_id>/check-out', methods=['POST'])
     def check_out_reserva(reserva_id):
         return ReservaController.check_out_reserva(reserva_id)
+
+    ## Relatórios
+    @app.route('/relatorios/receitas', methods=['GET'])
+    def relatorio_receitas():
+        return ReservaController.relatorio_receitas()
