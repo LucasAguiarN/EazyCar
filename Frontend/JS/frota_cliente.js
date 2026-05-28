@@ -4,10 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarFrotaParaClientes() {
     try {
-        let request = await fetch("http://localhost:5000/veiculos/disponiveis");
-        let veiculos = await request.json();
+        const resp = await fetch("http://localhost:5000/veiculos/disponiveis");
+        const veiculos = await resp.json();
 
-        let container = document.getElementById("grid_frota");
+        const container = document.getElementById("grid_frota");
         container.innerHTML = "";
 
         if (veiculos.length === 0) {
@@ -16,16 +16,24 @@ async function carregarFrotaParaClientes() {
         }
 
         veiculos.forEach(v => {
-            let div = document.createElement("div");
+            const detalhes = [
+                v.categoria    ? `<span>🏷️ ${v.categoria}</span>`    : "",
+                v.transmissao  ? `<span>⚙️ ${v.transmissao}</span>`  : "",
+                v.combustivel  ? `<span>⛽ ${v.combustivel}</span>`  : "",
+                v.cor          ? `<span>🎨 ${v.cor}</span>`          : "",
+            ].filter(Boolean).join("");
+
+            const diaria = (v.valor_diaria ?? 150).toFixed(2).replace(".", ",");
+
+            const div = document.createElement("div");
             div.className = "car-type-card";
             div.innerHTML = `
                 <div class="car-icon">🚗</div>
                 <h3>${v.marca} ${v.modelo}</h3>
-                <p><strong>Ano:</strong> ${v.ano}</p>
-                <p><strong>Placa:</strong> ${v.placa}</p>
-                <p style="color: #e63946; font-weight: bold; margin-top: 10px;">Diária: R$ 150,00</p>
-                
-                <button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="irParaReserva(${v.id})">
+                <p><strong>Ano:</strong> ${v.ano} &nbsp;|&nbsp; <strong>Placa:</strong> ${v.placa}</p>
+                ${detalhes ? `<p class="car-detalhes">${detalhes}</p>` : ""}
+                <p class="car-diaria">R$ ${diaria}<span>/dia</span></p>
+                <button class="btn-find-cars" onclick="irParaReserva(${v.id})">
                     Alugar Agora
                 </button>
             `;

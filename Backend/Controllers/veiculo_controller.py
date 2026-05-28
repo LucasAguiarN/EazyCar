@@ -7,19 +7,28 @@ from Backend.decorators import funcionario_required
 
 
 class VeiculoController:
+    COMBUSTIVEIS_VALIDOS  = {"Gasolina", "Etanol", "Diesel", "Flex", "Elétrico"}
+    TRANSMISSOES_VALIDAS  = {"Manual", "Automático"}
+    CATEGORIAS_VALIDAS    = {"Econômico", "Executivo", "SUV", "Van"}
+
     @funcionario_required
     @staticmethod
     def cadastrar_veiculo():
         funcionario_id = int(get_jwt_identity())
         dados = request.get_json(silent=True) or {}
 
-        marca = (dados.get("marca") or "").strip()
-        modelo = (dados.get("modelo") or "").strip()
-        placa = (dados.get("placa") or "").strip().upper()
-        status = (dados.get("status") or "Available").strip()
-        ano = dados.get("ano")
+        marca   = (dados.get("marca")   or "").strip()
+        modelo  = (dados.get("modelo")  or "").strip()
+        placa   = (dados.get("placa")   or "").strip().upper()
+        status  = (dados.get("status")  or "Available").strip()
+        ano     = dados.get("ano")
+        cor         = (dados.get("cor")        or "").strip() or None
+        combustivel = (dados.get("combustivel") or "").strip() or None
+        transmissao = (dados.get("transmissao") or "").strip() or None
+        categoria   = (dados.get("categoria")   or "").strip() or None
+        valor_diaria = dados.get("valor_diaria")
 
-        if not marca or not modelo or not placa or ano is None:
+        if not marca or not modelo or not placa or ano is None or valor_diaria is None:
             return jsonify({"mensagem": "Formulário incompleto!"}), 400
 
         try:
@@ -30,12 +39,23 @@ class VeiculoController:
         if ano_int < 1900 or ano_int > 2100:
             return jsonify({"mensagem": "Ano inválido!"}), 400
 
-        status_validos = {"Available", "Rented", "Maintenance"}
-        if status not in status_validos:
-            return jsonify({"mensagem": "Status inválido!"}), 400
+        try:
+            valor_diaria = float(valor_diaria)
+            if valor_diaria <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return jsonify({"mensagem": "Valor da diária inválido!"}), 400
 
-        existente = Veiculo.query.filter_by(placa=placa).first()
-        if existente:
+        if status not in {"Available", "Rented", "Maintenance"}:
+            return jsonify({"mensagem": "Status inválido!"}), 400
+        if combustivel and combustivel not in VeiculoController.COMBUSTIVEIS_VALIDOS:
+            return jsonify({"mensagem": "Combustível inválido!"}), 400
+        if transmissao and transmissao not in VeiculoController.TRANSMISSOES_VALIDAS:
+            return jsonify({"mensagem": "Transmissão inválida!"}), 400
+        if categoria and categoria not in VeiculoController.CATEGORIAS_VALIDAS:
+            return jsonify({"mensagem": "Categoria inválida!"}), 400
+
+        if Veiculo.query.filter_by(placa=placa).first():
             return jsonify({"mensagem": "Placa já cadastrada!"}), 409
 
         try:
@@ -45,6 +65,11 @@ class VeiculoController:
                 modelo=modelo,
                 ano=ano_int,
                 placa=placa,
+                cor=cor,
+                combustivel=combustivel,
+                transmissao=transmissao,
+                categoria=categoria,
+                valor_diaria=valor_diaria,
                 status=status,
             )
             db.session.add(veiculo)
@@ -99,10 +124,35 @@ class VeiculoController:
                 veiculo.placa = nova_placa
         if "status" in dados and dados.get("status") is not None:
             status = str(dados.get("status")).strip()
-            status_validos = {"Available", "Rented", "Maintenance"}
-            if status not in status_validos:
+            if status not in {"Available", "Rented", "Maintenance"}:
                 return jsonify({"mensagem": "Status inválido!"}), 400
             veiculo.status = status
+
+        if "cor" in dados:
+            veiculo.cor = (dados.get("cor") or "").strip() or None
+        if "combustivel" in dados and dados.get("combustivel") is not None:
+            c = str(dados.get("combustivel")).strip()
+            if c and c not in VeiculoController.COMBUSTIVEIS_VALIDOS:
+                return jsonify({"mensagem": "Combustível inválido!"}), 400
+            veiculo.combustivel = c or None
+        if "transmissao" in dados and dados.get("transmissao") is not None:
+            t = str(dados.get("transmissao")).strip()
+            if t and t not in VeiculoController.TRANSMISSOES_VALIDAS:
+                return jsonify({"mensagem": "Transmissão inválida!"}), 400
+            veiculo.transmissao = t or None
+        if "categoria" in dados and dados.get("categoria") is not None:
+            cat = str(dados.get("categoria")).strip()
+            if cat and cat not in VeiculoController.CATEGORIAS_VALIDAS:
+                return jsonify({"mensagem": "Categoria inválida!"}), 400
+            veiculo.categoria = cat or None
+        if "valor_diaria" in dados and dados.get("valor_diaria") is not None:
+            try:
+                vd = float(dados.get("valor_diaria"))
+                if vd <= 0:
+                    raise ValueError
+                veiculo.valor_diaria = vd
+            except (ValueError, TypeError):
+                return jsonify({"mensagem": "Valor da diária inválido!"}), 400
 
         if not veiculo.marca or not veiculo.modelo or not veiculo.placa:
             return jsonify({"mensagem": "Formulário incompleto!"}), 400

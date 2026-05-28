@@ -36,8 +36,7 @@ class ReservaController:
         if not veiculo:
             return jsonify({"mensagem": "Veículo indisponível ou não encontrado."}), 404
 
-        valor_diaria = 150.00 
-        valor_total = dias * valor_diaria
+        valor_total = dias * veiculo.valor_diaria
 
         try:
             nova_reserva = Reserva(

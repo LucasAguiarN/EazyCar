@@ -95,13 +95,18 @@ async function cadastrarVeiculo(event) {
   const token = requireAuth();
   if (!token) return;
 
-  const marca = document.getElementById("marca").value;
-  const modelo = document.getElementById("modelo").value;
-  const ano = document.getElementById("ano").value;
-  const placa = document.getElementById("placa").value;
-  const status = document.getElementById("status").value;
-
-  const dados = { marca, modelo, ano, placa, status };
+  const dados = {
+    marca:        document.getElementById("marca").value,
+    modelo:       document.getElementById("modelo").value,
+    ano:          document.getElementById("ano").value,
+    placa:        document.getElementById("placa").value,
+    cor:          document.getElementById("cor").value || null,
+    combustivel:  document.getElementById("combustivel").value || null,
+    transmissao:  document.getElementById("transmissao").value || null,
+    categoria:    document.getElementById("categoria").value || null,
+    valor_diaria: parseFloat(document.getElementById("valor_diaria").value),
+    status:       document.getElementById("status").value,
+  };
 
   try {
     const resp = await fetch(`${API_BASE}/veiculos`, {
@@ -128,9 +133,20 @@ async function carregarVeiculos() {
   const tbody = document.querySelector(".vehicles-table tbody");
   if (!tbody) return;
 
+  const token = requireAuth();
+  if (!token) return;
+
   try {
-    const resp = await fetch(`${API_BASE}/veiculos/disponiveis`);
-    const json = await resp.json();
+    const resp = await fetch(`${API_BASE}/veiculos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    let json;
+    try {
+      json = await resp.json();
+    } catch {
+      throw new Error(`Erro ${resp.status} do servidor. Verifique se o banco de dados foi atualizado com as novas colunas.`);
+    }
 
     if (!resp.ok) throw new Error(json.mensagem || "Erro ao listar veículos");
 
@@ -143,6 +159,8 @@ async function carregarVeiculos() {
         <td>${v.modelo}</td>
         <td>${v.ano}</td>
         <td>${v.placa}</td>
+        <td>${v.categoria || "—"}</td>
+        <td>R$ ${(v.valor_diaria ?? 0).toFixed(2).replace(".", ",")}</td>
         <td><span class="${statusToTagClass(v.status)}">${statusToPt(v.status)}</span></td>
         <td></td>
       `;
@@ -154,7 +172,13 @@ async function carregarVeiculos() {
       btnDelete.textContent = "Excluir";
 
       btnDelete.addEventListener("click", async () => {
-        tr.remove();
+        if (!confirm(`Excluir ${v.marca} ${v.modelo} (${v.placa})?`)) return;
+        try {
+          await deletarVeiculo(v.id);
+          tr.remove();
+        } catch (e) {
+          alert(e.message);
+        }
       });
 
       tdAcoes.appendChild(btnDelete);
@@ -211,8 +235,8 @@ async function carregarDashboard() {
 }
 
 function wireVeiculosPage() {
-  const form = document.querySelector("form.card");
-  if (form && document.getElementById("marca") && document.getElementById("placa")) {
+  const form = document.getElementById("form_veiculo");
+  if (form) {
     form.addEventListener("submit", cadastrarVeiculo);
   }
 
