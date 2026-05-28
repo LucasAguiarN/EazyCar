@@ -1,12 +1,13 @@
 from flask import jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity
 from datetime import datetime
 from Backend.Models.data_base import db
 from Backend.Models.reserva import Reserva
 from Backend.Models.veiculo import Veiculo
+from Backend.decorators import cliente_required
 
 class ReservaController:
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def criar_reserva():
         cliente_id = int(get_jwt_identity())
@@ -61,7 +62,7 @@ class ReservaController:
             db.session.rollback()
             return jsonify({"mensagem": "Erro interno ao processar reserva."}), 500
 
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def listar_minhas_reservas():
         cliente_id = int(get_jwt_identity())
@@ -83,7 +84,7 @@ class ReservaController:
             
         return jsonify(resultado), 200
 
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def check_in_reserva(reserva_id):
         """
@@ -109,7 +110,7 @@ class ReservaController:
             db.session.rollback()
             return jsonify({"mensagem": f"Erro ao realizar check-in: {str(e)}"}), 500
 
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def check_out_reserva(reserva_id):
         """

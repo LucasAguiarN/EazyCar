@@ -1,9 +1,10 @@
 from flask import jsonify, request, make_response
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, get_jwt_identity
 from sqlalchemy import or_
 import bcrypt
 from Backend.Models.data_base import db
 from Backend.Models.cliente import Cliente
+from Backend.decorators import cliente_required
 
 class ClienteController:
 
@@ -51,7 +52,7 @@ class ClienteController:
 
         return jsonify({"mensagem": "Cadastro realizado com sucesso!"}), 201
     
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def exibir_cliente():
         current_id = int(get_jwt_identity())
@@ -77,7 +78,7 @@ class ClienteController:
 
         cliente = Cliente.query.filter_by(email=email).first()
         if cliente and bcrypt.checkpw(senha.encode('utf-8'), cliente.senha.encode('utf-8')):
-            token = create_access_token(identity=str(cliente.id))
+            token = create_access_token(identity=str(cliente.id), additional_claims={"role": "cliente"})
             return make_response(jsonify({
                 "mensagem": "Login realizado com sucesso",
                 "token": token
@@ -85,7 +86,7 @@ class ClienteController:
 
         return jsonify({"mensagem": "Email ou senha inválidos!"}), 401
 
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def atualizar_cliente():
         current_id = int(get_jwt_identity())
@@ -111,7 +112,7 @@ class ClienteController:
 
         return jsonify({"mensagem": "Cliente atualizado com sucesso!"}), 200
 
-    @jwt_required()
+    @cliente_required
     @staticmethod
     def deletar_cliente():
         current_id = int(get_jwt_identity())

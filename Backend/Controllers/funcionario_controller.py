@@ -1,9 +1,10 @@
 from flask import jsonify, request, make_response
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, get_jwt_identity
 from sqlalchemy import or_
 import bcrypt
 from Backend.Models.data_base import db
 from Backend.Models.funcionario import Funcionario
+from Backend.decorators import funcionario_required
 
 class FuncionarioController:
 
@@ -45,7 +46,7 @@ class FuncionarioController:
 
         return jsonify({"mensagem": "Cadastro realizado com sucesso!"}), 201
     
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def exibir_funcionario():
         current_id = int(get_jwt_identity())
@@ -71,7 +72,7 @@ class FuncionarioController:
 
         funcionario = Funcionario.query.filter_by(email=email).first()
         if funcionario and bcrypt.checkpw(senha.encode('utf-8'), funcionario.senha.encode('utf-8')):
-            token = create_access_token(identity=str(funcionario.id))
+            token = create_access_token(identity=str(funcionario.id), additional_claims={"role": "funcionario"})
             return make_response(jsonify({
                 "mensagem": "Login realizado com sucesso",
                 "token": token
@@ -79,7 +80,7 @@ class FuncionarioController:
 
         return jsonify({"mensagem": "Email ou senha inválidos!"}), 401
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def atualizar_funcionario():
         current_id = int(get_jwt_identity())
@@ -102,7 +103,7 @@ class FuncionarioController:
 
         return jsonify({"mensagem": "Funcionário atualizado com sucesso!"}), 200
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def deletar_funcionario():
         current_id = int(get_jwt_identity())

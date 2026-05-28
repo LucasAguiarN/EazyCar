@@ -1,12 +1,13 @@
 from flask import jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity
 
 from Backend.Models.data_base import db
 from Backend.Models.veiculo import Veiculo
+from Backend.decorators import funcionario_required
 
 
 class VeiculoController:
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def cadastrar_veiculo():
         funcionario_id = int(get_jwt_identity())
@@ -54,14 +55,14 @@ class VeiculoController:
 
         return jsonify({"mensagem": "Veículo cadastrado com sucesso!", "veiculo": veiculo.para_dicionario()}), 201
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def listar_veiculos():
         # Frota global: todos os funcionários enxergam todos os veículos.
         veiculos = Veiculo.query.order_by(Veiculo.id.desc()).all()
         return jsonify([v.para_dicionario() for v in veiculos]), 200
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def obter_veiculo(veiculo_id: int):
         veiculo = Veiculo.query.filter_by(id=int(veiculo_id)).first()
@@ -69,7 +70,7 @@ class VeiculoController:
             return jsonify({"mensagem": "Veículo não encontrado!"}), 404
         return jsonify(veiculo.para_dicionario()), 200
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def atualizar_veiculo(veiculo_id: int):
         veiculo = Veiculo.query.filter_by(id=int(veiculo_id)).first()
@@ -117,7 +118,7 @@ class VeiculoController:
 
         return jsonify({"mensagem": "Veículo atualizado com sucesso!", "veiculo": veiculo.para_dicionario()}), 200
 
-    @jwt_required()
+    @funcionario_required
     @staticmethod
     def deletar_veiculo(veiculo_id: int):
         veiculo = Veiculo.query.filter_by(id=int(veiculo_id)).first()
