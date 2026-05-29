@@ -167,6 +167,14 @@ async function carregarVeiculos() {
 
       const tdAcoes = tr.querySelector("td:last-child");
 
+      const btnEdit = document.createElement("button");
+      btnEdit.className = "btn btn-inline";
+      btnEdit.textContent = "Editar";
+      btnEdit.addEventListener("click", () => {
+        sessionStorage.setItem("editVeiculoId", v.id);
+        window.location.href = "editar_veiculo.html";
+      });
+
       const btnDelete = document.createElement("button");
       btnDelete.className = "btn btn-inline";
       btnDelete.textContent = "Excluir";
@@ -181,6 +189,8 @@ async function carregarVeiculos() {
         }
       });
 
+      tdAcoes.appendChild(btnEdit);
+      tdAcoes.appendChild(document.createTextNode(" "));
       tdAcoes.appendChild(btnDelete);
       tbody.appendChild(tr);
     }
@@ -234,10 +244,101 @@ async function carregarDashboard() {
   }
 }
 
+async function carregarVeiculoParaEdicao() {
+  const veiculoId = sessionStorage.getItem("editVeiculoId");
+  if (!veiculoId) {
+    alert("Nenhum veículo selecionado para edição.");
+    window.location.href = "listar_veiculos.html";
+    return;
+  }
+
+  const token = requireAuth();
+  if (!token) return;
+
+  try {
+    const resp = await fetch(`${API_BASE}/veiculos/${veiculoId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    let json;
+    try {
+      json = await resp.json();
+    } catch {
+      throw new Error(`Erro ${resp.status} do servidor.`);
+    }
+
+    if (!resp.ok) throw new Error(json.mensagem || "Erro ao carregar veículo.");
+
+    document.getElementById("marca").value        = json.marca        || "";
+    document.getElementById("modelo").value       = json.modelo       || "";
+    document.getElementById("ano").value          = json.ano          || "";
+    document.getElementById("placa").value        = json.placa        || "";
+    document.getElementById("cor").value          = json.cor          || "";
+    document.getElementById("combustivel").value  = json.combustivel  || "";
+    document.getElementById("transmissao").value  = json.transmissao  || "";
+    document.getElementById("categoria").value    = json.categoria    || "";
+    document.getElementById("valor_diaria").value = json.valor_diaria || "";
+    document.getElementById("status").value       = json.status       || "Available";
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
+  }
+}
+
+async function salvarEdicaoVeiculo(event) {
+  event.preventDefault();
+
+  const veiculoId = sessionStorage.getItem("editVeiculoId");
+  if (!veiculoId) return;
+
+  const token = requireAuth();
+  if (!token) return;
+
+  const dados = {
+    marca:        document.getElementById("marca").value,
+    modelo:       document.getElementById("modelo").value,
+    ano:          document.getElementById("ano").value,
+    placa:        document.getElementById("placa").value,
+    cor:          document.getElementById("cor").value || null,
+    combustivel:  document.getElementById("combustivel").value || null,
+    transmissao:  document.getElementById("transmissao").value || null,
+    categoria:    document.getElementById("categoria").value || null,
+    valor_diaria: parseFloat(document.getElementById("valor_diaria").value),
+    status:       document.getElementById("status").value,
+  };
+
+  try {
+    const resp = await fetch(`${API_BASE}/veiculos/${veiculoId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const json = await resp.json();
+    if (!resp.ok) throw new Error(json.mensagem || "Erro ao atualizar veículo.");
+
+    sessionStorage.removeItem("editVeiculoId");
+    alert("Veículo atualizado com sucesso!");
+    window.location.href = "listar_veiculos.html";
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
+  }
+}
+
 function wireVeiculosPage() {
-  const form = document.getElementById("form_veiculo");
-  if (form) {
-    form.addEventListener("submit", cadastrarVeiculo);
+  const formCadastro = document.getElementById("form_veiculo");
+  if (formCadastro) {
+    formCadastro.addEventListener("submit", cadastrarVeiculo);
+  }
+
+  const formEdicao = document.getElementById("form_editar_veiculo");
+  if (formEdicao) {
+    carregarVeiculoParaEdicao();
+    formEdicao.addEventListener("submit", salvarEdicaoVeiculo);
   }
 
   const table = document.querySelector(".vehicles-table");

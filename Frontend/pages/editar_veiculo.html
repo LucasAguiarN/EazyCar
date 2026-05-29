@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EazyCar - Editar Veículo</title>
+    <link rel="stylesheet" href="../CSS/ui.css">
+    <script defer src="../JS/veiculos.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark" aria-label="EazyCar">
+                    <span class="brand-eazy">Eazy</span><span class="brand-car">Car</span>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="menu">
+                    <li><a href="dashboard.html">Painel</a></li>
+                    <li><a href="listar_veiculos.html" class="active">Veículos</a></li>
+                    <li><a href="cadastro_veiculo.html">Novo Veículo</a></li>
+                    <li><a href="relatorio.html">Relatório</a></li>
+                </ul>
+            </nav>
+
+            <a class="logout" href="#" id="btn_logout">Sair</a>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">EazyCar • Gestão de Aluguel de Carros</header>
+
+            <section class="content">
+                <h1>Editar Veículo</h1>
+                <p>Atualize os dados do veículo</p>
+
+                <form class="card" id="form_editar_veiculo">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="marca">Marca</label>
+                            <input type="text" id="marca" placeholder="Toyota" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="modelo">Modelo</label>
+                            <input type="text" id="modelo" placeholder="Corolla" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="ano">Ano</label>
+                            <input type="number" id="ano" placeholder="2024" min="1900" max="2100" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="placa">Placa</label>
+                            <input type="text" id="placa" placeholder="ABC-1234" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="cor">Cor</label>
+                            <input type="text" id="cor" placeholder="Preto">
+                        </div>
+
+                        <div class="field">
+                            <label for="combustivel">Combustível</label>
+                            <select id="combustivel">
+                                <option value="">Selecione</option>
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Etanol">Etanol</option>
+                                <option value="Flex">Flex</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Elétrico">Elétrico</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="transmissao">Transmissão</label>
+                            <select id="transmissao">
+                                <option value="">Selecione</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Automático">Automático</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="categoria">Categoria</label>
+                            <select id="categoria">
+                                <option value="">Selecione</option>
+                                <option value="Econômico">Econômico</option>
+                                <option value="Executivo">Executivo</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Van">Van</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="valor_diaria">Valor da Diária (R$)</label>
+                            <input type="number" id="valor_diaria" placeholder="150.00" min="0.01" step="0.01" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="status">Status</label>
+                            <select id="status">
+                                <option value="Available">Disponível</option>
+                                <option value="Rented">Alugado</option>
+                                <option value="Maintenance">Manutenção</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:.75rem">
+                        <button class="btn" type="submit">Salvar Alterações</button>
+                        <a href="listar_veiculos.html" class="btn" style="text-decoration:none;background:var(--surface-2,#e5e7eb);color:var(--text,#111)">Cancelar</a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
