@@ -15,7 +15,7 @@ def configurar_rotas(app):
     ## Cliente
     @app.route('/clientes', methods=['POST'])
     def cadastrar_cliente():
-        return ClienteController.cadastar_cliente()
+        return ClienteController.cadastrar_cliente()
 
     @app.route('/clientes', methods=['GET'])
     def listar_clientes():
