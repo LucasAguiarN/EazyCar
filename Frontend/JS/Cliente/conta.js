@@ -46,7 +46,7 @@ function editar_conta() {
 
 async function carregar_dados() {
     try {
-        let response = await fetch("http://localhost:5000/clientes/conta", {
+        let response = await fetch("https://eazycarapi.up.railway.app/clientes/conta", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -122,7 +122,7 @@ async function atualizar_cadastro() {
     };
 
     try {
-        let response = await fetch("http://localhost:5000/clientes/conta", {
+        let response = await fetch("https://eazycarapi.up.railway.app/clientes/conta", {
             method: "PUT",
             body: JSON.stringify(dados),
             headers: {
@@ -152,7 +152,7 @@ function deslogar() {
 
 async function deletar_conta() {
     try {
-        let response = await fetch("http://localhost:5000/clientes/conta", {
+        let response = await fetch("https://eazycarapi.up.railway.app/clientes/conta", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

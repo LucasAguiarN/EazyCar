@@ -16,7 +16,7 @@ async function enviar_cadastro() {
     };
 
     try {
-        let response = await fetch("http://localhost:5000/funcionarios", {
+        let response = await fetch("https://eazycarapi.up.railway.app/funcionarios", {
             method: "POST",
             body: JSON.stringify(dados),
             headers: {
