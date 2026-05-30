@@ -15,7 +15,8 @@ def create_app():
 
     app = Flask(__name__)
 
-    CORS(app)
+    frontend_url = os.getenv("FRONTEND_URL", "*")
+    CORS(app, origins=frontend_url)
 
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     # Para ambiente de desenvolvimento: evita expirar o token em 15 minutos.
@@ -34,4 +35,4 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarFrotaParaClientes() {
     try {
-        const resp = await fetch("https://eazycarapi.up.railway.app/veiculos/disponiveis");
+        const resp = await fetch(`${API_BASE}/veiculos/disponiveis`);
         const veiculos = await resp.json();
 
         const container = document.getElementById("grid_frota");

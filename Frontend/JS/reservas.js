@@ -32,7 +32,7 @@ async function carregarVeiculosDisponiveis() {
     const selectedVehicleId = sessionStorage.getItem('selectedVehicleId');
 
     try {
-        let request = await fetch("https://eazycarapi.up.railway.app/veiculos/disponiveis");
+        let request = await fetch(`${API_BASE}/veiculos/disponiveis`);
         let veiculos = await request.json();
 
         let container = document.getElementById("lista_veiculos");
@@ -125,7 +125,7 @@ async function reservarVeiculo(veiculoId) {
     };
 
     try {
-        let request = await fetch("https://eazycarapi.up.railway.app/reservas", {
+        let request = await fetch(`${API_BASE}/reservas`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -159,7 +159,7 @@ async function carregarMinhasReservas() {
     }
 
     try {
-        let request = await fetch("https://eazycarapi.up.railway.app/reservas/minhas", {
+        let request = await fetch(`${API_BASE}/reservas/minhas`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -239,7 +239,7 @@ async function realizarCheckIn(reservaId) {
     if (!confirm('Deseja confirmar o check-in desta reserva?')) return;
 
     try {
-        let request = await fetch(`https://eazycarapi.up.railway.app/reservas/${reservaId}/check-in`, {
+        let request = await fetch(`${API_BASE}/reservas/${reservaId}/check-in`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -271,7 +271,7 @@ async function realizarCheckOut(reservaId) {
     if (!confirm('Deseja confirmar o check-out desta reserva?')) return;
 
     try {
-        let request = await fetch(`https://eazycarapi.up.railway.app/reservas/${reservaId}/check-out`, {
+        let request = await fetch(`${API_BASE}/reservas/${reservaId}/check-out`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -23,11 +23,11 @@ async function autenticar_login() {
     let nome_do_token = "";
 
     if (pageId == "login_funcionario") {
-        url = "https://eazycarapi.up.railway.app/funcionarios/login";
+        url = API_BASE + "/funcionarios/login";
         href_logar = '../../pages/dashboard.html';
         nome_do_token = 'token_funcionario';
     } else {
-        url = "https://eazycarapi.up.railway.app/clientes/login";
+        url = API_BASE + "/clientes/login";
         nome_do_token = 'token_cliente';
 
         if (sessionStorage.getItem('carSearchData')) {

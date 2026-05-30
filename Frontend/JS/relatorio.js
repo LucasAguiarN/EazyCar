@@ -1,5 +1,3 @@
-const API_BASE = "https://eazycarapi.up.railway.app";
-
 document.getElementById("btn_logout").addEventListener("click", () => {
   localStorage.removeItem("token_funcionario");
   window.location.href = "../pages/Funcionário/login.html";

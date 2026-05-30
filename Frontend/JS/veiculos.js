@@ -1,5 +1,3 @@
-const API_BASE = "https://eazycarapi.up.railway.app";
-
 document.getElementById("btn_logout").addEventListener("click", deslogar);
 
 function deslogar() {
