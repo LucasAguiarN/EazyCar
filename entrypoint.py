@@ -3,11 +3,11 @@ import time
 
 from mysql.connector import connect, Error
 
-MYSQL_HOST = os.environ.get("MYSQL_HOST", "mysql")
-MYSQL_PORT = int(os.environ.get("MYSQL_PORT", "3306"))
-MYSQL_USER = os.environ.get("MYSQL_ROOT_USER", "root")
-MYSQL_PASSWORD = os.environ.get("MYSQL_ROOT_PASSWORD", "123")
-MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "aluguel_carros")
+MYSQL_HOST     = os.environ.get("DB_HOST",     "mysql")
+MYSQL_PORT     = int(os.environ.get("DB_PORT", "3306"))
+MYSQL_USER     = os.environ.get("DB_USER",     "root")
+MYSQL_PASSWORD = os.environ.get("DB_PASSWORD", "")
+MYSQL_DATABASE = os.environ.get("DB_NAME",     "railway")
 
 
 def wait_for_mysql(timeout: int = 120, interval: int = 2) -> None:
@@ -37,4 +37,5 @@ def wait_for_mysql(timeout: int = 120, interval: int = 2) -> None:
 
 if __name__ == "__main__":
     wait_for_mysql()
-    os.execvp("flask", ["flask", "run"])
+    port = os.environ.get("PORT", "5000")
+    os.execvp("gunicorn", ["gunicorn", "run:app", "--bind", f"0.0.0.0:{port}"])
