@@ -6,13 +6,6 @@ class Veiculo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    funcionario_id = db.Column(
-        db.Integer,
-        db.ForeignKey("funcionarios.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
-
     marca        = db.Column(db.String(100), nullable=False)
     modelo       = db.Column(db.String(100), nullable=False)
     ano          = db.Column(db.Integer, nullable=False)
@@ -27,7 +20,6 @@ class Veiculo(db.Model):
     def para_dicionario(self):
         return {
             "id":            self.id,
-            "funcionario_id": self.funcionario_id,
             "marca":         self.marca,
             "modelo":        self.modelo,
             "ano":           self.ano,

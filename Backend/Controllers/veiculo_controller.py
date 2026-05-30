@@ -1,5 +1,4 @@
 from flask import jsonify, request
-from flask_jwt_extended import get_jwt_identity
 
 from Backend.Models.data_base import db
 from Backend.Models.veiculo import Veiculo
@@ -14,7 +13,6 @@ class VeiculoController:
     @funcionario_required
     @staticmethod
     def cadastrar_veiculo():
-        funcionario_id = int(get_jwt_identity())
         dados = request.get_json(silent=True) or {}
 
         marca   = (dados.get("marca")   or "").strip()
@@ -60,7 +58,6 @@ class VeiculoController:
 
         try:
             veiculo = Veiculo(
-                funcionario_id=funcionario_id,
                 marca=marca,
                 modelo=modelo,
                 ano=ano_int,
@@ -83,7 +80,6 @@ class VeiculoController:
     @funcionario_required
     @staticmethod
     def listar_veiculos():
-        # Frota global: todos os funcionários enxergam todos os veículos.
         veiculos = Veiculo.query.order_by(Veiculo.id.desc()).all()
         return jsonify([v.para_dicionario() for v in veiculos]), 200
 
@@ -186,7 +182,6 @@ class VeiculoController:
     
 
 
-    # @jwt_required()
     @staticmethod
     def listar_veiculos_disponiveis():
         veiculos = Veiculo.query.filter_by(status="Available").all()
