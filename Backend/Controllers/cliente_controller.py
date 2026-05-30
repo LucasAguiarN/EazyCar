@@ -4,12 +4,12 @@ from sqlalchemy import or_
 import bcrypt
 from Backend.Models.data_base import db
 from Backend.Models.cliente import Cliente
-from Backend.decorators import cliente_required
+from Backend.decorators import cliente_required, funcionario_required
 
 class ClienteController:
 
     @staticmethod
-    def cadastar_cliente():
+    def cadastrar_cliente():
         dados = request.get_json(silent=True) or {}
 
         nome = dados.get("nome")
@@ -61,6 +61,7 @@ class ClienteController:
             return jsonify(cliente.para_dicionario()), 200
         return jsonify({"mensagem": "Cliente não encontrado!"}), 404
 
+    @funcionario_required
     @staticmethod
     def listar_clientes():
         clientes = Cliente.query.order_by(Cliente.id.desc()).all()
@@ -95,14 +96,26 @@ class ClienteController:
             return jsonify({"mensagem": "Cliente não encontrado!"}), 404
 
         dados = request.get_json(silent=True) or {}
-        cliente.nome = dados.get('nome', cliente.nome)
-        cliente.cpf = dados.get('cpf', cliente.cpf) 
-        cliente.email = dados.get('email', cliente.email)
-        cliente.celular = dados.get('celular', cliente.celular)
-        cliente.cep = dados.get("cep", cliente.cep)
-        cliente.endereco = dados.get("endereco", cliente.endereco)
-        cliente.numero = dados.get("numero", cliente.numero)
-        cliente.complemento = dados.get("complemento", cliente.complemento)
+
+        novo_cpf   = dados.get('cpf',   cliente.cpf)
+        novo_email = dados.get('email', cliente.email)
+
+        if novo_cpf != cliente.cpf:
+            if Cliente.query.filter(Cliente.cpf == novo_cpf, Cliente.id != current_id).first():
+                return jsonify({"mensagem": "CPF já cadastrado por outro cliente."}), 409
+
+        if novo_email != cliente.email:
+            if Cliente.query.filter(Cliente.email == novo_email, Cliente.id != current_id).first():
+                return jsonify({"mensagem": "E-mail já cadastrado por outro cliente."}), 409
+
+        cliente.nome        = dados.get('nome',        cliente.nome)
+        cliente.cpf         = novo_cpf
+        cliente.email       = novo_email
+        cliente.celular     = dados.get('celular',     cliente.celular)
+        cliente.cep         = dados.get('cep',         cliente.cep)
+        cliente.endereco    = dados.get('endereco',    cliente.endereco)
+        cliente.numero      = dados.get('numero',      cliente.numero)
+        cliente.complemento = dados.get('complemento', cliente.complemento)
 
         try:
             db.session.commit()
@@ -119,8 +132,12 @@ class ClienteController:
         cliente = Cliente.query.filter_by(id=current_id).first()
         if not cliente:
             return jsonify({"mensagem": "Cliente não encontrado!"}), 404
-        
-        db.session.delete(cliente)
-        db.session.commit()
+
+        try:
+            db.session.delete(cliente)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            return jsonify({"mensagem": "Não é possível excluir conta com reservas ativas."}), 409
 
         return jsonify({"mensagem": "Conta deletada com sucesso!"}), 200

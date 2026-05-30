@@ -55,6 +55,7 @@ class FuncionarioController:
             return jsonify(funcionario.para_dicionario()), 200
         return jsonify({"mensagem": "Funcionário não encontrado!"}), 404
 
+    @funcionario_required
     @staticmethod
     def listar_funcionarios():
         funcionarios = Funcionario.query.order_by(Funcionario.id.desc()).all()
@@ -89,11 +90,23 @@ class FuncionarioController:
             return jsonify({"mensagem": "Funcionário não encontrado!"}), 404
 
         dados = request.get_json(silent=True) or {}
-        funcionario.nome = dados.get('nome', funcionario.nome)
-        funcionario.cpf = dados.get('cpf', funcionario.cpf) 
-        funcionario.email = dados.get('email', funcionario.email)
+
+        novo_cpf   = dados.get('cpf',   funcionario.cpf)
+        novo_email = dados.get('email', funcionario.email)
+
+        if novo_cpf != funcionario.cpf:
+            if Funcionario.query.filter(Funcionario.cpf == novo_cpf, Funcionario.id != current_id).first():
+                return jsonify({"mensagem": "CPF já cadastrado por outro funcionário."}), 409
+
+        if novo_email != funcionario.email:
+            if Funcionario.query.filter(Funcionario.email == novo_email, Funcionario.id != current_id).first():
+                return jsonify({"mensagem": "E-mail já cadastrado por outro funcionário."}), 409
+
+        funcionario.nome    = dados.get('nome',    funcionario.nome)
+        funcionario.cpf     = novo_cpf
+        funcionario.email   = novo_email
         funcionario.celular = dados.get('celular', funcionario.celular)
-        funcionario.cargo = dados.get('cargo', funcionario.cargo)
+        funcionario.cargo   = dados.get('cargo',   funcionario.cargo)
 
         try:
             db.session.commit()
@@ -110,8 +123,12 @@ class FuncionarioController:
         funcionario = Funcionario.query.filter_by(id=current_id).first()
         if not funcionario:
             return jsonify({"mensagem": "Funcionário não encontrado!"}), 404
-        
-        db.session.delete(funcionario)
-        db.session.commit()
+
+        try:
+            db.session.delete(funcionario)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            return jsonify({"mensagem": "Não é possível excluir conta com dependências ativas."}), 409
 
         return jsonify({"mensagem": "Conta deletada com sucesso!"}), 200

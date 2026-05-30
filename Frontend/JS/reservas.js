@@ -46,17 +46,20 @@ async function carregarVeiculosDisponiveis() {
         veiculos.forEach(v => {
             let isSelected = selectedVehicleId && Number(selectedVehicleId) === v.id;
             let highlight = isSelected ? 'border: 3px solid #e63946; box-shadow: 0 0 20px rgba(230, 57, 70, 0.15);' : '';
+            const diaria = (v.valor_diaria ?? 150).toFixed(2).replace(".", ",");
+
             let div = document.createElement("div");
             div.className = "car-type-card";
             div.style.cssText = highlight;
             div.dataset.vehicleId = v.id;
+            div.dataset.valorDiaria = v.valor_diaria ?? 150;
             div.innerHTML = `
                 <div class="car-icon">🚗</div>
                 <h3>${v.marca} ${v.modelo}</h3>
                 <p><strong>Ano:</strong> ${v.ano}</p>
                 <p><strong>Placa:</strong> ${v.placa}</p>
-                <p style="color: #e63946; font-weight: bold; margin-top: 10px;">Diária: R$ 150,00</p>
-                
+                <p style="color: #e63946; font-weight: bold; margin-top: 10px;">Diária: R$ ${diaria}</p>
+
                 <button class="btn-find-cars" style="margin-top: 15px; width: 100%;" onclick="reservarVeiculo(${v.id})">
                     Reservar Este
                 </button>
@@ -99,7 +102,9 @@ async function reservarVeiculo(veiculoId) {
         return;
     }
 
-    let valorTotal = dias * 150;
+    const card = document.querySelector(`[data-vehicle-id="${veiculoId}"]`);
+    const valorDiaria = card ? parseFloat(card.dataset.valorDiaria) : 150;
+    let valorTotal = dias * valorDiaria;
 
     let confirmacao = confirm(`Resumo da Reserva:\n\nLocal: ${localRetirada}\nDias: ${dias}\nValor Total: R$ ${valorTotal.toFixed(2)}\n\nDeseja confirmar a locação?`);
     if (!confirmacao) return;
