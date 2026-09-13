@@ -3,6 +3,7 @@ from Backend.Controllers.cliente_controller import ClienteController
 from Backend.Controllers.funcionario_controller import FuncionarioController
 from Backend.Controllers.veiculo_controller import VeiculoController
 from Backend.Controllers.reserva_controller import ReservaController
+from Backend.Controllers.assinatura_controller import AssinaturaController
 from Backend.Controllers.pontos_controller import PontosController
 from Backend.Controllers.avaliacao_controller import AvaliacaoController
 
@@ -108,6 +109,15 @@ def configurar_rotas(app):
     def check_out_reserva(reserva_id):
         return ReservaController.check_out_reserva(reserva_id)
 
+    ## Assinaturas
+    @app.route('/assinaturas', methods=['POST'])
+    def criar_assinatura():
+        return AssinaturaController.criar_assinatura()
+
+    @app.route('/assinaturas/minha', methods=['GET'])
+    def minha_assinatura():
+        return AssinaturaController.minha_assinatura()
+    
     ## Relatórios
     @app.route('/relatorios/receitas', methods=['GET'])
     def relatorio_receitas():

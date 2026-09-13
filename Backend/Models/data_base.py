@@ -51,9 +51,21 @@ def garantir_colunas_fidelidade():
         if "pontos_ganhos" not in colunas:
             db.session.execute(text("ALTER TABLE reservas ADD COLUMN pontos_ganhos INT NULL"))
 
+
+    if "tipo_reserva" not in colunas:
+        db.session.execute(
+        text(
+            "ALTER TABLE reservas "
+            "ADD COLUMN tipo_reserva VARCHAR(20) "
+            "NOT NULL DEFAULT 'comum'"
+        )
+    )
+    
+
     if "veiculos" in tabelas:
         colunas = {c["name"] for c in inspector.get_columns("veiculos")}
         if "imagem" not in colunas:
             db.session.execute(text("ALTER TABLE veiculos ADD COLUMN imagem VARCHAR(255) NULL"))
 
+   
     db.session.commit()

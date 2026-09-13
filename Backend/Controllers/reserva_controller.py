@@ -3,6 +3,7 @@ from flask_jwt_extended import get_jwt_identity
 from datetime import datetime
 from Backend.Models.data_base import db
 from Backend.Models.reserva import Reserva
+from Backend.Models.assinatura import Assinatura
 from Backend.Models.veiculo import Veiculo
 from Backend.Models.cliente import Cliente
 from Backend.Models.pontos import MovimentacaoPontos
@@ -10,18 +11,32 @@ from Backend.Models.avaliacao import Avaliacao
 from Backend.decorators import cliente_required, funcionario_required
 from Backend.fidelidade import pontos_por_categoria, reais_equivalentes
 
+
 class ReservaController:
     @cliente_required
     @staticmethod
     def criar_reserva():
         cliente_id = int(get_jwt_identity())
         dados = request.get_json(silent=True) or {}
+        print("DADOS RECEBIDOS:", dados, flush=True)  # Adicione esta linha para depuração
 
         veiculo_id = dados.get("veiculo_id")
         data_retirada_str = dados.get("data_retirada")
         data_devolucao_str = dados.get("data_devolucao")
         local_retirada = dados.get("local_retirada")
         local_devolucao = dados.get("local_devolucao")
+        tipo_reserva = dados.get("tipo_reserva", "comum") 
+
+        print(
+            "VALIDACAO >>>",
+            veiculo_id,
+            data_retirada_str,
+            data_devolucao_str,
+            local_retirada,
+            local_devolucao,
+            flush=True
+            )
+         
 
         if not veiculo_id or not data_retirada_str or not data_devolucao_str or not local_retirada or not local_devolucao:
             return jsonify({"mensagem": "Dados incompletos!"}), 400
@@ -36,11 +51,37 @@ class ReservaController:
         if dias <= 0:
             return jsonify({"mensagem": "A devolução deve ser posterior à retirada."}), 400
 
+        if tipo_reserva not in ["comum", "assinatura"]:
+            return jsonify({
+        "mensagem": "Tipo de reserva inválido."
+            }), 400
+        
         veiculo = Veiculo.query.filter_by(id=veiculo_id, status="Available").first()
+
         if not veiculo:
             return jsonify({"mensagem": "Veículo indisponível ou não encontrado."}), 404
 
-        valor_total = dias * veiculo.valor_diaria
+        if tipo_reserva == "assinatura":
+
+            assinatura = Assinatura.query.filter_by(
+                cliente_id=cliente_id,
+                status="Ativa"
+            ).first()
+
+            if not assinatura:
+                return jsonify({
+                    "mensagem": "Você não possui uma assinatura ativa."
+                }), 403
+
+        if assinatura.data_fim < data_devolucao:
+            return jsonify({
+                "mensagem": "A reserva ultrapassa o período da sua assinatura."
+            }), 400
+
+            valor_total = 0.0
+
+        else:
+            valor_total = dias * veiculo.valor_diaria
 
         try:
             nova_reserva = Reserva(
@@ -50,7 +91,8 @@ class ReservaController:
                 local_devolucao=local_devolucao,  
                 data_retirada=data_retirada,
                 data_devolucao=data_devolucao,
-                valor_total=valor_total
+                valor_total=valor_total,
+                tipo_reserva=tipo_reserva,
             )
             db.session.add(nova_reserva)
             veiculo.status = "Rented"

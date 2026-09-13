@@ -12,6 +12,7 @@ from Backend.Models.reserva import Reserva  # noqa: F401
 from Backend.Models.pontos import MovimentacaoPontos, VoucherAbastecimento  # noqa: F401
 from Backend.Models.avaliacao import Avaliacao  # noqa: F401
 from Backend.routes import configurar_rotas
+from Backend.Models.assinatura import Assinatura  # noqa: F401
 
 load_dotenv()
 
