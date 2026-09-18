@@ -206,6 +206,7 @@ async function carregarVeiculosDisponiveis() {
                 <h3>${v.marca} ${v.modelo}</h3>
                 <p><strong>Ano:</strong> ${v.ano}</p>
                 <p><strong>Placa:</strong> ${v.placa}</p>
+                <p><strong>Categoria:</strong> ${v.categoria || "Não informada"}</p>
                 <p style="color: #e63946; font-weight: bold; margin-top: 10px;">Diária: R$ ${diaria}</p>
                 <span class="points-badge">+${v.pontos_fidelidade || 30} pontos no check-out</span>
                 ${mediaHtml}
@@ -265,6 +266,11 @@ async function reservarVeiculo(veiculoId) {
 
     if (dias <= 0) {
         alert("A data de devolução precisa ser depois da data de retirada.");
+        return;
+    }
+
+    if (tipoReserva === "assinatura" && dias < 30) {
+        alert("Reservas por assinatura devem possuir duração mínima de 30 dias.");
         return;
     }
 

@@ -117,6 +117,10 @@ def configurar_rotas(app):
     @app.route('/assinaturas/minha', methods=['GET'])
     def minha_assinatura():
         return AssinaturaController.minha_assinatura()
+
+    @app.route('/assinaturas/cancelar-renovacao', methods=['POST'])
+    def cancelar_renovacao():
+        return AssinaturaController.cancelar_renovacao()
     
     ## Relatórios
     @app.route('/relatorios/receitas', methods=['GET'])
