@@ -50,16 +50,12 @@ def garantir_colunas_fidelidade():
         colunas = {c["name"] for c in inspector.get_columns("reservas")}
         if "pontos_ganhos" not in colunas:
             db.session.execute(text("ALTER TABLE reservas ADD COLUMN pontos_ganhos INT NULL"))
-
-
-    if "tipo_reserva" not in colunas:
-        db.session.execute(
-        text(
-            "ALTER TABLE reservas "
-            "ADD COLUMN tipo_reserva VARCHAR(20) "
-            "NOT NULL DEFAULT 'comum'"
-        )
-    )
+        if "tipo_reserva" not in colunas:
+            db.session.execute(text(
+                "ALTER TABLE reservas "
+                "ADD COLUMN tipo_reserva VARCHAR(20) "
+                "NOT NULL DEFAULT 'comum'"
+            ))
     
 
     if "veiculos" in tabelas:
@@ -67,5 +63,17 @@ def garantir_colunas_fidelidade():
         if "imagem" not in colunas:
             db.session.execute(text("ALTER TABLE veiculos ADD COLUMN imagem VARCHAR(255) NULL"))
 
-   
+    if "assinaturas" in tabelas:
+        colunas = {c["name"] for c in inspector.get_columns("assinaturas")}
+        if "renovacao_automatica" not in colunas:
+            db.session.execute(text(
+                "ALTER TABLE assinaturas "
+                "ADD COLUMN renovacao_automatica BOOLEAN NOT NULL DEFAULT TRUE"
+            ))
+        db.session.execute(text(
+            "UPDATE assinaturas "
+            "SET plano = 'Essencial', valor_mensal = 299.90 "
+            "WHERE plano = 'Mensal'"
+        ))
+
     db.session.commit()
