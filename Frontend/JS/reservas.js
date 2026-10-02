@@ -678,7 +678,7 @@ function escaparHtml(texto) {
     return div.innerHTML;
 }
 
-async function cancelarReserva(reservaId) {
+function cancelarReserva(reservaId) {
     let token = localStorage.getItem('token_cliente');
     if (!token) {
         alert("Você precisa estar logado para cancelar a reserva.");
@@ -686,11 +686,44 @@ async function cancelarReserva(reservaId) {
         return;
     }
 
-    if (!confirm('Deseja realmente cancelar esta reserva? Esta ação não pode ser desfeita.')) return;
+    abrirModalCancelamento(reservaId);
+}
 
-    // null = usuário clicou em "Cancelar" no prompt: desiste do cancelamento.
-    let motivo = prompt('Motivo do cancelamento (opcional):', '');
-    if (motivo === null) return;
+// Modal próprio em vez de confirm()/prompt(): no prompt nativo o botão
+// "Cancelar" aborta a operação, o que confunde num fluxo de cancelamento.
+function abrirModalCancelamento(reservaId) {
+    fecharModalCancelamento();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'modal_cancelamento';
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+        <div class="modal-box">
+            <h3>Cancelar reserva</h3>
+            <p style="margin-bottom: 15px;">
+                Deseja realmente cancelar esta reserva? Esta ação não pode ser desfeita.
+            </p>
+            <textarea id="motivo_cancelamento" maxlength="255" placeholder="Motivo do cancelamento (opcional)"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="btn_confirmar_cancelamento" class="btn-find-cars" style="flex: 1;" onclick="confirmarCancelamento(${reservaId})">Confirmar cancelamento</button>
+                <button class="btn-secondary" style="flex: 1;" onclick="fecharModalCancelamento()">Voltar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function fecharModalCancelamento() {
+    const overlay = document.getElementById('modal_cancelamento');
+    if (overlay) overlay.remove();
+}
+
+async function confirmarCancelamento(reservaId) {
+    const token = localStorage.getItem('token_cliente');
+    const motivoEl = document.getElementById('motivo_cancelamento');
+    const motivo = motivoEl ? motivoEl.value.trim() : '';
+    const botao = document.getElementById('btn_confirmar_cancelamento');
+    if (botao) botao.disabled = true;
 
     try {
         let request = await fetch(`${API_BASE}/reservas/${reservaId}/cancelar`, {
@@ -699,18 +732,20 @@ async function cancelarReserva(reservaId) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ motivo: motivo.trim() })
+            body: JSON.stringify({ motivo })
         });
 
         let resposta = await request.json();
+        fecharModalCancelamento();
         if (request.ok) {
+            await carregarMinhasReservas();
             alert(resposta.mensagem || 'Reserva cancelada com sucesso!');
-            carregarMinhasReservas();
         } else {
             alert(resposta.mensagem || 'Erro ao cancelar reserva.');
         }
     } catch (error) {
         console.error('Erro ao cancelar reserva:', error);
+        if (botao) botao.disabled = false;
         alert('Falha de conexão ao cancelar reserva.');
     }
 }
