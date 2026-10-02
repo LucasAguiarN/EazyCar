@@ -361,6 +361,11 @@ input:focus {
   color: #991b1b;
 }
 
+.tag-cancelled {
+  background: #e5e7eb;
+  color: #374151;
+}
+
 select {
   border: 1px solid var(--line);
   border-radius: 10px;

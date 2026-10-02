@@ -18,7 +18,7 @@ function requireAuth() {
 }
 
 function statusToPt(status) {
-  const map = { Active: "Ativa", "Em Uso": "Em Uso", "Concluído": "Concluída" };
+  const map = { Active: "Ativa", "Em Uso": "Em Uso", "Concluído": "Concluída", Cancelada: "Cancelada" };
   return map[status] || status;
 }
 
@@ -26,6 +26,7 @@ function statusClass(status) {
   if (status === "Concluído") return "tag tag-available";
   if (status === "Em Uso")    return "tag tag-rented";
   if (status === "Active")    return "tag tag-maintenance";
+  if (status === "Cancelada") return "tag tag-cancelled";
   return "tag";
 }
 
@@ -91,7 +92,7 @@ function renderRelatorio(data) {
         <td>${r.data_devolucao}</td>
         <td>${r.local_retirada}</td>
         <td>${r.local_devolucao}</td>
-        <td>${formatBRL(r.valor_total)}</td>
+        <td>${r.status === "Cancelada" ? `<s>${formatBRL(r.valor_total)}</s>` : formatBRL(r.valor_total)}</td>
         <td><span class="${statusClass(r.status)}">${statusToPt(r.status)}</span></td>
       </tr>`).join("");
 

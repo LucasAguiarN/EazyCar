@@ -105,6 +105,10 @@ def configurar_rotas(app):
     def check_in_reserva(reserva_id):
         return ReservaController.check_in_reserva(reserva_id)
 
+    @app.route('/reservas/<int:reserva_id>/cancelar', methods=['POST'])
+    def cancelar_reserva(reserva_id):
+        return ReservaController.cancelar_reserva(reserva_id)
+
     @app.route('/reservas/<int:reserva_id>/check-out', methods=['POST'])
     def check_out_reserva(reserva_id):
         return ReservaController.check_out_reserva(reserva_id)

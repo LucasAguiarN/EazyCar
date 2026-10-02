@@ -56,7 +56,11 @@ def garantir_colunas_fidelidade():
                 "ADD COLUMN tipo_reserva VARCHAR(20) "
                 "NOT NULL DEFAULT 'comum'"
             ))
-    
+        if "data_hora_cancelamento" not in colunas:
+            db.session.execute(text("ALTER TABLE reservas ADD COLUMN data_hora_cancelamento DATETIME NULL"))
+        if "motivo_cancelamento" not in colunas:
+            db.session.execute(text("ALTER TABLE reservas ADD COLUMN motivo_cancelamento VARCHAR(255) NULL"))
+
 
     if "veiculos" in tabelas:
         colunas = {c["name"] for c in inspector.get_columns("veiculos")}

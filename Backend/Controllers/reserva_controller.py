@@ -303,6 +303,72 @@ class ReservaController:
 
     @cliente_required
     @staticmethod
+    def cancelar_reserva(reserva_id):
+        cliente_id = int(get_jwt_identity())
+        dados = request.get_json(silent=True) or {}
+
+        motivo = (dados.get("motivo") or "").strip()
+
+        if len(motivo) > 255:
+            return jsonify({
+                "mensagem":
+                    "O motivo do cancelamento deve ter no máximo 255 caracteres."
+            }), 400
+
+        try:
+            reserva = Reserva.query.filter_by(
+                id=reserva_id,
+                cliente_id=cliente_id
+            ).first()
+
+            if not reserva:
+                return jsonify({
+                    "mensagem":
+                        "Reserva não encontrada ou acesso não autorizado."
+                }), 404
+
+            if (
+                reserva.status != "Active"
+                or reserva.data_hora_check_in is not None
+            ):
+                return jsonify({
+                    "mensagem": (
+                        "Apenas reservas sem check-in realizado "
+                        "podem ser canceladas. "
+                        f"Status atual: {reserva.status}"
+                    )
+                }), 400
+
+            reserva.status = "Cancelada"
+            reserva.data_hora_cancelamento = datetime.now()
+            reserva.motivo_cancelamento = motivo or None
+
+            veiculo = Veiculo.query.filter_by(
+                id=reserva.veiculo_id
+            ).first()
+
+            # Só libera o veículo se ele ainda estiver preso a esta
+            # reserva; não sobrescreve um status de manutenção.
+            if veiculo and veiculo.status == "Rented":
+                veiculo.status = "Available"
+
+            db.session.commit()
+
+            return jsonify({
+                "mensagem": "Reserva cancelada com sucesso!",
+                "reserva": reserva.to_dict()
+            }), 200
+
+        except Exception:
+            db.session.rollback()
+
+            return jsonify({
+                "mensagem": "Erro interno ao cancelar reserva."
+            }), 500
+
+
+    @cliente_required
+    @staticmethod
     def check_out_reserva(reserva_id):
         cliente_id = int(get_jwt_identity())
 
@@ -468,11 +534,17 @@ class ReservaController:
         por_status: dict[str, int] = {}
         lista = []
 
+        total_canceladas = 0
+
         for r in reservas:
 
-            receita_total += (
-                r.valor_total or 0.0
-            )
+            # Reservas canceladas não geram receita.
+            if r.status == "Cancelada":
+                total_canceladas += 1
+            else:
+                receita_total += (
+                    r.valor_total or 0.0
+                )
 
             por_status[r.status] = (
                 por_status.get(
@@ -532,10 +604,11 @@ class ReservaController:
             })
 
         total_reservas = len(lista)
+        total_faturadas = total_reservas - total_canceladas
 
         ticket_medio = (
-            receita_total / total_reservas
-            if total_reservas
+            receita_total / total_faturadas
+            if total_faturadas
             else 0.0
         )
 
@@ -548,6 +621,9 @@ class ReservaController:
             "resumo": {
                 "total_reservas":
                     total_reservas,
+
+                "total_canceladas":
+                    total_canceladas,
 
                 "receita_total":
                     round(

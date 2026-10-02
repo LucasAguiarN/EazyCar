@@ -477,6 +477,13 @@ async function carregarMinhasReservas() {
             >
                 Check-in
             </button>
+            <button
+                class="btn-secondary"
+                style="margin-top: 10px; width: 100%;"
+                onclick="cancelarReserva(${r.id})"
+            >
+                Cancelar reserva
+            </button>
         `;
     } else if (r.status === 'Em Uso') {
         actionButton = `
@@ -487,6 +494,18 @@ async function carregarMinhasReservas() {
             >
                 Check-out
             </button>
+        `;
+    }
+    let cancelamentoHtml = '';
+    if (r.status === 'Cancelada') {
+        let dataCanc = r.data_hora_cancelamento
+            ? r.data_hora_cancelamento.split(' ')[0].split('-').reverse().join('/')
+            : '';
+        cancelamentoHtml = `
+            <p style="font-size: 0.9em; color: gray;">
+                Cancelada em ${dataCanc}
+                ${r.motivo_cancelamento ? `<br>Motivo: ${escaparHtml(r.motivo_cancelamento)}` : ''}
+            </p>
         `;
     }
     let avaliacaoHtml =
@@ -518,6 +537,18 @@ async function carregarMinhasReservas() {
             <p>
                 <strong>Valor da reserva:</strong>
                 Coberto pela assinatura
+            </p>
+        `;
+    } else if (r.status === 'Cancelada') {
+        valorReservaHtml = `
+            <p
+                style="
+                    color: gray;
+                    margin-top: 15px;
+                    font-size: 1.1em;
+                "
+            >
+                Valor: <s>R$ ${r.valor_total.toFixed(2)}</s>
             </p>
         `;
     } else {
@@ -592,9 +623,10 @@ async function carregarMinhasReservas() {
         >
             Status:
             <strong>
-                ${r.status}
+                ${r.status === 'Active' ? 'Ativa' : r.status}
             </strong>
         </p>
+        ${cancelamentoHtml}
         ${actionButton}
         ${avaliacaoHtml}
     `;
@@ -637,6 +669,49 @@ async function realizarCheckIn(reservaId) {
     } catch (error) {
         console.error('Erro no check-in:', error);
         alert('Falha de conexão ao realizar check-in.');
+    }
+}
+
+function escaparHtml(texto) {
+    const div = document.createElement('div');
+    div.textContent = texto;
+    return div.innerHTML;
+}
+
+async function cancelarReserva(reservaId) {
+    let token = localStorage.getItem('token_cliente');
+    if (!token) {
+        alert("Você precisa estar logado para cancelar a reserva.");
+        window.location.href = "Cliente/login.html";
+        return;
+    }
+
+    if (!confirm('Deseja realmente cancelar esta reserva? Esta ação não pode ser desfeita.')) return;
+
+    // null = usuário clicou em "Cancelar" no prompt: desiste do cancelamento.
+    let motivo = prompt('Motivo do cancelamento (opcional):', '');
+    if (motivo === null) return;
+
+    try {
+        let request = await fetch(`${API_BASE}/reservas/${reservaId}/cancelar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ motivo: motivo.trim() })
+        });
+
+        let resposta = await request.json();
+        if (request.ok) {
+            alert(resposta.mensagem || 'Reserva cancelada com sucesso!');
+            carregarMinhasReservas();
+        } else {
+            alert(resposta.mensagem || 'Erro ao cancelar reserva.');
+        }
+    } catch (error) {
+        console.error('Erro ao cancelar reserva:', error);
+        alert('Falha de conexão ao cancelar reserva.');
     }
 }
 

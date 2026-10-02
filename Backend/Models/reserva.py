@@ -18,6 +18,8 @@ class Reserva(db.Model):
     data_hora_check_in = db.Column(db.DateTime, nullable=True)
     data_hora_check_out = db.Column(db.DateTime, nullable=True)
     pontos_ganhos = db.Column(db.Integer, nullable=True)
+    data_hora_cancelamento = db.Column(db.DateTime, nullable=True)
+    motivo_cancelamento = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
         return {
@@ -34,4 +36,6 @@ class Reserva(db.Model):
             'data_hora_check_in': self.data_hora_check_in.strftime('%Y-%m-%d %H:%M:%S') if self.data_hora_check_in else None,
             'data_hora_check_out': self.data_hora_check_out.strftime('%Y-%m-%d %H:%M:%S') if self.data_hora_check_out else None,
             'pontos_ganhos': self.pontos_ganhos,
+            'data_hora_cancelamento': self.data_hora_cancelamento.strftime('%Y-%m-%d %H:%M:%S') if self.data_hora_cancelamento else None,
+            'motivo_cancelamento': self.motivo_cancelamento,
         }
