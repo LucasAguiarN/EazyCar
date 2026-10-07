@@ -46,7 +46,7 @@ Projeto da Disciplina de Software Product: Analysis & Specification, ministrada 
     <td align="center">
       <img src="https://github.com/Isaacnasc.png" width="100" alt="Foto"/><br>
       <b>Isaac do Nascimento Silva</b><br><br>
-        <a href="https://www.linkedin.com/in/isaac-nascimento-1925232a3/" target="_blank"><img title="Conecte-se" src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Perfil Linkedin"/></a>
+        <a href="https://www.linkedin.com/in/isaac-nasc" target="_blank"><img title="Conecte-se" src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Perfil Linkedin"/></a>
       <a href="https://github.com/Isaacnasc" target="_blank"><img title="Siga-Me" src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="Perfil GitHub"/></a>
     </td>
     <td align="center">
