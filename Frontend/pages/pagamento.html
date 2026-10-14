@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EazyCar - Pagamento da Reserva</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/ui.css">
+    <link rel="stylesheet" href="../CSS/forms.css">
+    <style>
+        .payment-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .payment-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: #e5e7eb;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .payment-section {
+            display: none;
+        }
+
+        .payment-section.active {
+            display: block;
+        }
+
+        .pix-box {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .pix-code {
+            font-family: Consolas, monospace;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            word-break: break-all;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header/Navbar -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="../index.html">
+                    <img src="../assets/icone_EasyCar.png" alt="EazyCar Logo" class="logo-icon">
+                    <span class="logo-text">Eazy<span class="logo-highlight">Car</span></span>
+                </a>
+            </div>
+            <nav class="navbar-menu" id="navbarMenu">
+                <a href="../index.html" class="nav-link">Início</a>
+                <a href="minhas_reservas.html" class="nav-link">Reservas</a>
+                <a href="veiculos.html" class="nav-link">Frotas</a>
+                <a href="Cliente/pontos.html" class="nav-link">Pontos</a>
+                <a href="Cliente/assinatura.html" class="nav-link">Assinatura</a>
+                <a href="Cliente/login.html" class="nav-link">Conta</a>
+            </nav>
+        </div>
+    </header>
+
+    <div id="mensagemBloqueio" style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <h2>Verificando credenciais de acesso...</h2>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div id="conteudoPagamento" style="display: none;">
+        <main class="payment-container">
+            <div class="card">
+                <h2>Finalizar Pagamento da Reserva</h2>
+                <p>Escolha a forma de pagamento para ativar o seu veículo.</p>
+
+                <!-- Resumo da Reserva -->
+                <div id="resumoReserva"
+                    style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                    <p><strong>Carregando detalhes da reserva...</strong></p>
+                </div>
+
+                <!-- Abas de Pagamento -->
+                <div class="payment-tabs">
+                    <button type="button" class="tab-btn active" onclick="alternarTab('pix')">PIX (Instantâneo)</button>
+                    <button type="button" class="tab-btn" onclick="alternarTab('cartao')">Cartão de Crédito</button>
+                </div>
+
+                <!-- Seção PIX -->
+                <div id="secaoPix" class="payment-section active">
+                    <div class="pix-box">
+                        <h3>Pague com PIX</h3>
+                        <p>Escaneie o QR Code abaixo ou utilize o código Copia e Cola para aprovação imediata.</p>
+                        <div style="font-size: 60px; margin: 15px 0;">📱 🔲</div>
+                        <div class="pix-code" id="pixCopiaCola">00020126360014BR.GOV.BCB.PIX0114EASYCAR123456789</div>
+                        <button type="button" class="btn btn-primary" onclick="pagarComPix()">Copiar Código e Pagar
+                            Instantaneamente</button>
+                    </div>
+                </div>
+
+                <!-- Seção Cartão de Crédito -->
+                <div id="secaoCartao" class="payment-section">
+                    <form id="formCartao" onsubmit="pagarComCartao(event)">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="nomeTitular">Nome no Cartão</label>
+                            <input type="text" id="nomeTitular" required placeholder="Como impresso no cartão">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="numeroCartao">Número do Cartão</label>
+                            <input type="text" id="numeroCartao" required placeholder="0000 0000 0000 0000"
+                                maxlength="19">
+                        </div>
+                        <div class="form-row"
+                            style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="validadeCartao">Validade (MM/AA)</label>
+                                <input type="text" id="validadeCartao" required placeholder="MM/AA" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="cvvCartao">CVV</label>
+                                <input type="text" id="cvvCartao" required placeholder="123" maxlength="4">
+                            </div>
+                        </div>
+                        <button type="submit" id="btnPagarCartao" class="btn btn-primary" disabled>Pagar e Ativar
+                            Reserva</button>
+                    </form>
+                </div>
+
+                <!-- Botão de Cancelar -->
+                <div
+                    style="margin-top: 30px; border-top: 1px solid var(--line); padding-top: 20px; display: flex; justify-content: space-between;">
+                    <button type="button" class="btn btn-danger" style="width: auto;"
+                        onclick="cancelarReservaPagamento()">Cancelar Reserva</button>
+                    <a href="minhas_reservas.html" class="btn btn-secondary"
+                        style="width: auto; text-align: center; line-height: 24px;">Ver Minhas Reservas</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../JS/config.js"></script>
+    <script src="../JS/api.js"></script>
+    <script src="../JS/pagamento.js"></script>
+</body>
+
+</html>

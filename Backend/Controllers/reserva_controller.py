@@ -9,6 +9,7 @@ from Backend.Models.veiculo import Veiculo
 from Backend.Models.cliente import Cliente
 from Backend.Models.pontos import MovimentacaoPontos
 from Backend.Models.avaliacao import Avaliacao
+from Backend.Models.pagamento import Pagamento
 
 from Backend.decorators import cliente_required, funcionario_required
 from Backend.fidelidade import pontos_por_categoria, reais_equivalentes
@@ -172,23 +173,35 @@ class ReservaController:
                 data_retirada=data_retirada,
                 data_devolucao=data_devolucao,
                 valor_total=valor_total,
-                tipo_reserva=tipo_reserva
+                tipo_reserva=tipo_reserva,
+                status="Inactive"
             )
 
             db.session.add(nova_reserva)
+            db.session.flush()
+
+            novo_pagamento = Pagamento(
+                reserva_id=nova_reserva.id,
+                metodo_pagamento="pendente",
+                status="Pendente",
+                valor=valor_total,
+                codigo_pix=None
+            )
+            db.session.add(novo_pagamento)
 
             veiculo.status = "Rented"
 
             db.session.commit()
 
             return jsonify({
-                "mensagem": "Reserva realizada com sucesso!",
-                "reserva": nova_reserva.to_dict()
+                "mensagem": "Reserva realizada com sucesso! Realize o pagamento para ativá-la.",
+                "reserva": nova_reserva.to_dict(),
+                "reserva_id": nova_reserva.id
             }), 201
 
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-
+            print("ERRO AO CRIAR RESERVA:", str(e), flush=True)
             return jsonify({
                 "mensagem": "Erro interno ao processar reserva."
             }), 500
@@ -328,7 +341,7 @@ class ReservaController:
                 }), 404
 
             if (
-                reserva.status != "Active"
+                reserva.status not in ["Active", "Inactive"]
                 or reserva.data_hora_check_in is not None
             ):
                 return jsonify({
@@ -339,24 +352,34 @@ class ReservaController:
                     )
                 }), 400
 
+            veiculo = Veiculo.query.get(reserva.veiculo_id)
+            if veiculo:
+                veiculo.status = "Available"
+
             reserva.status = "Cancelada"
             reserva.data_hora_cancelamento = datetime.now()
             reserva.motivo_cancelamento = motivo or None
 
-            veiculo = Veiculo.query.filter_by(
-                id=reserva.veiculo_id
-            ).first()
+            pagamento = Pagamento.query.filter_by(reserva_id=reserva.id).first()
+            teve_reembolso = False
 
-            # Só libera o veículo se ele ainda estiver preso a esta
-            # reserva; não sobrescreve um status de manutenção.
-            if veiculo and veiculo.status == "Rented":
-                veiculo.status = "Available"
+            if pagamento:
+                if pagamento.status == "Aprovado":
+                    pagamento.status = "Reembolsado"
+                    teve_reembolso = True
+                else:
+                    pagamento.status = "Cancelado"
 
             db.session.commit()
 
+            if teve_reembolso:
+                mensagem_sucesso = "Reserva cancelada com sucesso! O reembolso do valor pago foi processado com sucesso."
+            else:
+                mensagem_sucesso = "Reserva cancelada com sucesso."
+
             return jsonify({
-                "mensagem": "Reserva cancelada com sucesso!",
-                "reserva": reserva.to_dict()
+                "mensagem": mensagem_sucesso,
+                "reembolsado": teve_reembolso
             }), 200
 
         except Exception:
