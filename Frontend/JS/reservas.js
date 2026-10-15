@@ -374,27 +374,26 @@ async function reservarVeiculo(veiculoId) {
 
         // 10. Trata a resposta do backend
         if (request.ok) {
-
+            console.log(resposta);
+            const reservaId = resposta.reserva_id || (resposta.reserva && resposta.reserva.id) || resposta.id;
             if (tipoReserva === "assinatura") {
-
-                alert(
-                    "Reserva realizada com sucesso utilizando sua assinatura!"
-                );
-
+                alert("Reserva realizada com sucesso utilizando sua assinatura!");
+                sessionStorage.removeItem("carSearchData");
+                carregarVeiculosDisponiveis();
+            } else if (reservaId) {
+                alert("Reserva criada com sucesso! Redirecionando para o pagamento...");
+                const isInPages = window.location.pathname.includes('/pages/');
+                const urlPagamento = isInPages
+                    ? `pagamento.html?reserva_id=${reservaId}`
+                    : `pages/pagamento.html?reserva_id=${reservaId}`;
+                window.location.href = urlPagamento;
+                return;
             } else {
-
-                alert(
-                    "Sucesso! O carro foi reservado."
-                );
+                alert("Sucesso! O carro foi reservado, mas o ID não foi retornado.");
+                sessionStorage.removeItem("carSearchData");
+                carregarVeiculosDisponiveis();
             }
-
-
-            sessionStorage.removeItem("carSearchData");
-
-            carregarVeiculosDisponiveis();
-
         } else {
-
             alert(
                 resposta.mensagem ||
                 "Erro ao realizar reserva."
@@ -455,21 +454,21 @@ async function carregarMinhasReservas() {
             return;
         }
 
-       reservas.forEach(r => {
+        reservas.forEach(r => {
 
-    let dataRet = r.data_retirada
-        .split('-')
-        .reverse()
-        .join('/');
+            let dataRet = r.data_retirada
+                .split('-')
+                .reverse()
+                .join('/');
 
-    let dataDev = r.data_devolucao
-        .split('-')
-        .reverse()
-        .join('/');
-        
-    let actionButton = '';
-    if (r.status === 'Active') {
-          actionButton = `
+            let dataDev = r.data_devolucao
+                .split('-')
+                .reverse()
+                .join('/');
+
+            let actionButton = '';
+            if (r.status === 'Active') {
+                actionButton = `
             <button
                 class="btn-find-cars"
                 style="margin-top: 15px; width: 100%;"
@@ -485,8 +484,8 @@ async function carregarMinhasReservas() {
                 Cancelar reserva
             </button>
         `;
-    } else if (r.status === 'Em Uso') {
-        actionButton = `
+            } else if (r.status === 'Em Uso') {
+                actionButton = `
             <button
                 class="btn-find-cars"
                 style="margin-top: 15px; width: 100%;"
@@ -495,35 +494,53 @@ async function carregarMinhasReservas() {
                 Check-out
             </button>
         `;
-    }
-    let cancelamentoHtml = '';
-    if (r.status === 'Cancelada') {
-        let dataCanc = r.data_hora_cancelamento
-            ? r.data_hora_cancelamento.split(' ')[0].split('-').reverse().join('/')
-            : '';
-        cancelamentoHtml = `
+            } else if (r.status == 'Inactive') {
+                actionButton = `
+            <button
+                class="btn-find-cars"
+                style="margin-top: 15px; width: 100%;"
+                onclick="window.location.href='pagamento.html?reserva_id=${r.id}'"
+            >
+                Realizar Pagamento
+            </button>
+            <button
+                class="btn-secondary"
+                style="margin-top: 10px; width: 100%;"
+                onclick="cancelarReserva(${r.id})"
+            >
+                Cancelar reserva
+            </button>
+        `;
+            }
+
+            let cancelamentoHtml = '';
+            if (r.status === 'Cancelada') {
+                let dataCanc = r.data_hora_cancelamento
+                    ? r.data_hora_cancelamento.split(' ')[0].split('-').reverse().join('/')
+                    : '';
+                cancelamentoHtml = `
             <p style="font-size: 0.9em; color: gray;">
                 Cancelada em ${dataCanc}
                 ${r.motivo_cancelamento ? `<br>Motivo: ${escaparHtml(r.motivo_cancelamento)}` : ''}
             </p>
         `;
-    }
-    let avaliacaoHtml =
-        (r.status === 'Concluído' && r.avaliada)
-        ? `
+            }
+            let avaliacaoHtml =
+                (r.status === 'Concluído' && r.avaliada)
+                    ? `
             <div class="avaliacao-box">
                 <span class="avaliacao-feita">
                     ✓ Você avaliou esta locação
                 </span>
             </div>
         `
-        : '';
-    // NOVO:
-    // Exibição diferente para reserva comum e assinatura
-    let valorReservaHtml = '';
+                    : '';
+            // NOVO:
+            // Exibição diferente para reserva comum e assinatura
+            let valorReservaHtml = '';
 
-    if (r.tipo_reserva === 'assinatura') {
-        valorReservaHtml = `
+            if (r.tipo_reserva === 'assinatura') {
+                valorReservaHtml = `
             <p
                 style="
                     color: green;
@@ -539,8 +556,8 @@ async function carregarMinhasReservas() {
                 Coberto pela assinatura
             </p>
         `;
-    } else if (r.status === 'Cancelada') {
-        valorReservaHtml = `
+            } else if (r.status === 'Cancelada') {
+                valorReservaHtml = `
             <p
                 style="
                     color: gray;
@@ -551,8 +568,21 @@ async function carregarMinhasReservas() {
                 Valor: <s>R$ ${r.valor_total.toFixed(2)}</s>
             </p>
         `;
-    } else {
-        valorReservaHtml = `
+            } else if (r.status === 'Inactive') {
+                valorReservaHtml = `
+            <p
+                style="
+                    color: #e63946;
+                    font-weight: bold;
+                    margin-top: 15px;
+                    font-size: 1.1em;
+                "
+            >
+                Total a Pagar: R$ ${r.valor_total.toFixed(2)}
+            </p>
+        `;
+            } else {
+                valorReservaHtml = `
             <p
                 style="
                     color: #e63946;
@@ -564,17 +594,17 @@ async function carregarMinhasReservas() {
                 Total Pago: R$ ${r.valor_total.toFixed(2)}
             </p>
         `;
-    }
-    // Criação do card
-    let div = document.createElement("div");
+            }
+            // Criação do card
+            let div = document.createElement("div");
 
-    div.className = "car-type-card";
-    div.style.borderTop = "4px solid #e63946";
-    div.innerHTML = `
+            div.className = "car-type-card";
+            div.style.borderTop = "4px solid #e63946";
+            div.innerHTML = `
         ${htmlFotoVeiculo(
-            r.veiculo_imagem,
-            r.veiculo_nome
-        )}
+                r.veiculo_imagem,
+                r.veiculo_nome
+            )}
         <h3>
             ${r.veiculo_nome}
         </h3>
@@ -601,23 +631,21 @@ async function carregarMinhasReservas() {
             ${dataDev}
         </p>
         ${valorReservaHtml}
-        ${
-            r.pontos_ganhos
-                ? `
+        ${r.pontos_ganhos
+                    ? `
                     <span class="points-badge">
                         +${r.pontos_ganhos} pontos ganhos
                     </span>
                   `
-                : ""
-        }
+                    : ""
+                }
         <p
             style="
                 margin-top: 10px;
                 font-size: 0.9em;
-                color: ${
-                    r.status === 'Active'
-                        ? 'green'
-                        : 'gray'
+                color: ${r.status === 'Active'
+                    ? 'green'
+                    : 'gray'
                 };
             "
         >
@@ -630,9 +658,9 @@ async function carregarMinhasReservas() {
         ${actionButton}
         ${avaliacaoHtml}
     `;
-    container.appendChild(div);
+            container.appendChild(div);
 
-});
+        });
 
     } catch (error) {
         console.error("Erro ao buscar reservas:", error);

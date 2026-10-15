@@ -6,6 +6,7 @@ from Backend.Controllers.reserva_controller import ReservaController
 from Backend.Controllers.assinatura_controller import AssinaturaController
 from Backend.Controllers.pontos_controller import PontosController
 from Backend.Controllers.avaliacao_controller import AvaliacaoController
+from Backend.Controllers.pagamento_controller import PagamentoController
 
 def configurar_rotas(app):
     
@@ -152,3 +153,12 @@ def configurar_rotas(app):
     @app.route('/clientes/pontos/resgatar', methods=['POST'])
     def resgatar_pontos():
         return PontosController.resgatar()
+
+    ## Pagamento
+    @app.route('/reservas/<int:reserva_id>/pagar', methods=['POST'])
+    def pagar_reserva(reserva_id):
+        return PagamentoController.processar_pagamento_reserva(reserva_id)
+
+    @app.route('/pagamentos/meus', methods=['GET'])
+    def listar_meus_pagamentos():
+        return PagamentoController.listar_pagamentos()
