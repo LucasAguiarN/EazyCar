@@ -45,9 +45,7 @@ async function carregarDetalhesReserva() {
     try {
         const token_cliente = localStorage.getItem('token_cliente');
         const resumoDiv = document.getElementById('resumoReserva');
-        const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://localhost:5000';
-
-        const response = await fetch(`${baseUrl}/reservas/minhas`, {
+        const response = await fetch(`${API_BASE}/reservas/minhas`, {
             headers: {
                 'Authorization': `Bearer ${token_cliente}`,
                 'Content-Type': 'application/json'
@@ -120,10 +118,9 @@ async function pagarComCartao(event) {
 // Envia a requisição POST para o backend processar o pagamento
 async function enviarRequisicaoPagamento(metodo) {
     const token_cliente = localStorage.getItem('token_cliente');
-    const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://localhost:5000';
 
     try {
-        const response = await fetch(`${baseUrl}/reservas/${reservaId}/pagar`, {
+        const response = await fetch(`${API_BASE}/reservas/${reservaId}/pagar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -151,10 +148,9 @@ async function cancelarReservaPagamento() {
     if (!confirm("Deseja realmente cancelar esta reserva e liberar o veículo?")) return;
 
     const token_cliente = localStorage.getItem('token_cliente');
-    const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://localhost:5000';
 
     try {
-        const response = await fetch(`${baseUrl}/reservas/${reservaId}/cancelar`, {
+        const response = await fetch(`${API_BASE}/reservas/${reservaId}/cancelar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
