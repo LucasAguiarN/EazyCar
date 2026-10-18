@@ -7,7 +7,18 @@
     <title>EazyCar - Relatório de Receitas</title>
     <link rel="stylesheet" href="../CSS/ui.css">
     <script src="../JS/config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script defer src="../JS/relatorio.js"></script>
+    <style>
+        /* Cores de status usadas só no relatório */
+        .tag-rel-em-uso     { background: #dbeafe; color: #1e40af; }
+        .tag-rel-cancelada  { background: #fee2e2; color: #991b1b; }
+        .tag-rel-aguardando { background: #fef3c7; color: #92400e; }
+        .tag-rel-ativa      { background: #e5e7eb; color: #374151; }
+        #btn_exportar_csv { white-space: nowrap; }
+        .vehicles-table .tag { white-space: nowrap; }
+        #btn_exportar_csv:disabled { opacity: .5; cursor: not-allowed; }
+    </style>
 </head>
 
 <body>
@@ -36,18 +47,55 @@
 
             <section class="content">
                 <h1>Relatório de Receitas</h1>
-                <p>Filtre por período para visualizar as receitas geradas</p>
+                <p>Filtre por período, veículo, categoria, status, tipo e local para visualizar as receitas geradas</p>
 
-                <form class="card" id="form_relatorio" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
-                    <div class="field" style="flex:1;min-width:160px">
-                        <label for="data_inicio">Data inicial</label>
-                        <input type="date" id="data_inicio" required>
+                <form class="card" id="form_relatorio" style="display:flex;flex-direction:column;gap:1rem">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(max(170px,calc((100% - 2rem) / 3)),1fr));gap:1rem">
+                        <div class="field" style="min-width:0">
+                            <label for="data_inicio">Data inicial</label>
+                            <input type="date" id="data_inicio" required>
+                        </div>
+                        <div class="field" style="min-width:0">
+                            <label for="data_fim">Data final</label>
+                            <input type="date" id="data_fim" required>
+                        </div>
+                        <div class="field" style="min-width:0">
+                            <label for="filtro_categoria">Categoria</label>
+                            <select id="filtro_categoria">
+                                <option value="">Todas</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="field" style="flex:1;min-width:160px">
-                        <label for="data_fim">Data final</label>
-                        <input type="date" id="data_fim" required>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(max(170px,calc((100% - 3rem) / 4)),1fr));gap:1rem">
+                        <div class="field" style="min-width:0">
+                            <label for="filtro_veiculo">Veículo</label>
+                            <select id="filtro_veiculo">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="field" style="min-width:0">
+                            <label for="filtro_status">Status da reserva</label>
+                            <select id="filtro_status">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="field" style="min-width:0">
+                            <label for="filtro_tipo">Tipo de reserva</label>
+                            <select id="filtro_tipo">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="field" style="min-width:0">
+                            <label for="filtro_local">Local de retirada</label>
+                            <select id="filtro_local">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
                     </div>
-                    <button class="btn" type="submit" style="margin-bottom:0">Gerar Relatório</button>
+                    <div style="display:flex;gap:.75rem;width:100%">
+                        <button class="btn" type="submit" style="margin-bottom:0">Gerar Relatório</button>
+                        <button class="btn" type="button" id="btn_limpar_filtros" style="margin-bottom:0;background:#fff;color:var(--text);border:1px solid var(--line)">Limpar filtros</button>
+                    </div>
                 </form>
 
                 <div id="resultado" style="margin-top:1.5rem"></div>

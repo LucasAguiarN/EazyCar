@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity
 from datetime import datetime, timedelta
+from sqlalchemy import func
 
 from Backend.Models.data_base import db
 from Backend.Models.reserva import Reserva
@@ -541,11 +542,51 @@ class ReservaController:
                     "data_fim deve ser igual ou posterior a data_inicio."
             }), 400
 
-        reservas = (
-            Reserva.query
+        veiculo_id_str = (request.args.get("veiculo_id") or "").strip()
+        categoria = (request.args.get("categoria") or "").strip()
+        status = (request.args.get("status") or "").strip()
+        tipo_reserva = (request.args.get("tipo_reserva") or "").strip()
+        local_retirada = (request.args.get("local_retirada") or "").strip()
+
+        veiculo_id = None
+
+        if veiculo_id_str:
+            try:
+                veiculo_id = int(veiculo_id_str)
+            except ValueError:
+                return jsonify({
+                    "mensagem":
+                        "veiculo_id inválido."
+                }), 400
+
+        filtros_veiculo = []
+
+        if veiculo_id is not None:
+            filtros_veiculo.append(Veiculo.id == veiculo_id)
+
+        if categoria:
+            filtros_veiculo.append(Veiculo.categoria == categoria)
+
+        filtros_reserva = list(filtros_veiculo)
+
+        if status:
+            filtros_reserva.append(Reserva.status == status)
+
+        if tipo_reserva:
+            filtros_reserva.append(
+                func.lower(Reserva.tipo_reserva) == tipo_reserva.lower()
+            )
+
+        if local_retirada:
+            filtros_reserva.append(Reserva.local_retirada == local_retirada)
+
+        resultados = (
+            db.session.query(Reserva, Veiculo)
+            .join(Veiculo, Reserva.veiculo_id == Veiculo.id)
             .filter(
                 Reserva.data_retirada >= data_inicio,
-                Reserva.data_retirada <= data_fim
+                Reserva.data_retirada <= data_fim,
+                *filtros_reserva
             )
             .order_by(
                 Reserva.data_retirada.asc()
@@ -555,18 +596,34 @@ class ReservaController:
 
         receita_total = 0.0
         por_status: dict[str, int] = {}
+        receita_por_categoria: dict[str, float] = {}
+        receita_por_dia: dict[str, float] = {}
         lista = []
 
         total_canceladas = 0
+        total_pagantes = 0
 
-        for r in reservas:
+        for r, veiculo in resultados:
 
-            # Reservas canceladas não geram receita.
+
             if r.status == "Cancelada":
                 total_canceladas += 1
-            else:
-                receita_total += (
-                    r.valor_total or 0.0
+            elif r.status != "Inactive":
+                valor = r.valor_total or 0.0
+
+                if (r.tipo_reserva or "").lower() == "comum":
+                    total_pagantes += 1
+
+                receita_total += valor
+
+                nome_categoria = veiculo.categoria or "Sem categoria"
+                receita_por_categoria[nome_categoria] = (
+                    receita_por_categoria.get(nome_categoria, 0.0) + valor
+                )
+
+                dia = r.data_retirada.strftime("%Y-%m-%d")
+                receita_por_dia[dia] = (
+                    receita_por_dia.get(dia, 0.0) + valor
                 )
 
             por_status[r.status] = (
@@ -576,48 +633,27 @@ class ReservaController:
                 ) + 1
             )
 
-            veiculo = Veiculo.query.filter_by(
-                id=r.veiculo_id
-            ).first()
-
-            cliente = Cliente.query.filter_by(
-                id=r.cliente_id
-            ).first()
-
             lista.append({
                 "id":
                     r.id,
 
-                "cliente_nome":
-                    cliente.nome
-                    if cliente
-                    else "—",
-
                 "veiculo_nome":
-                    f"{veiculo.marca} {veiculo.modelo}"
-                    if veiculo
-                    else "—",
+                    f"{veiculo.marca} {veiculo.modelo}",
 
-                "veiculo_placa":
-                    veiculo.placa
-                    if veiculo
-                    else "—",
+                "categoria":
+                    veiculo.categoria,
 
-                "data_retirada":
-                    r.data_retirada.strftime(
-                        "%Y-%m-%d"
-                    ),
-
-                "data_devolucao":
-                    r.data_devolucao.strftime(
-                        "%Y-%m-%d"
-                    ),
+                "diarias":
+                    (r.data_devolucao - r.data_retirada).days,
 
                 "local_retirada":
                     r.local_retirada,
 
                 "local_devolucao":
                     r.local_devolucao,
+
+                "tipo_reserva":
+                    r.tipo_reserva,
 
                 "valor_total":
                     r.valor_total,
@@ -627,11 +663,69 @@ class ReservaController:
             })
 
         total_reservas = len(lista)
-        total_faturadas = total_reservas - total_canceladas
 
         ticket_medio = (
-            receita_total / total_faturadas
-            if total_faturadas
+            receita_total / total_pagantes
+            if total_pagantes
+            else 0.0
+        )
+
+        taxa_cancelamento = (
+            total_canceladas / total_reservas * 100
+            if total_reservas
+            else 0.0
+        )
+
+        receita_periodo = []
+        acumulado = 0.0
+        dia_atual = data_inicio
+
+        while dia_atual <= data_fim:
+            chave = dia_atual.strftime("%Y-%m-%d")
+            valor_dia = receita_por_dia.get(chave, 0.0)
+            acumulado += valor_dia
+
+            receita_periodo.append({
+                "data": chave,
+                "receita": round(valor_dia, 2),
+                "acumulado": round(acumulado, 2)
+            })
+
+            dia_atual += timedelta(days=1)
+
+        total_veiculos = (
+            Veiculo.query
+            .filter(*filtros_veiculo)
+            .count()
+        )
+
+        dias_periodo = (data_fim - data_inicio).days + 1
+        fim_exclusivo = data_fim + timedelta(days=1)
+
+        reservas_no_periodo = (
+            db.session.query(Reserva)
+            .join(Veiculo, Reserva.veiculo_id == Veiculo.id)
+            .filter(
+                Reserva.status.notin_(["Cancelada", "Inactive"]),
+                Reserva.data_retirada < fim_exclusivo,
+                Reserva.data_devolucao > data_inicio,
+                *filtros_reserva
+            )
+            .all()
+        )
+
+        dias_alugados = 0
+
+        for r in reservas_no_periodo:
+            inicio = max(r.data_retirada, data_inicio)
+            fim = min(r.data_devolucao, fim_exclusivo)
+            dias_alugados += max((fim - inicio).days, 0)
+
+        capacidade = total_veiculos * dias_periodo
+
+        taxa_ocupacao = (
+            min(dias_alugados / capacidade * 100, 100.0)
+            if capacidade
             else 0.0
         )
 
@@ -639,6 +733,14 @@ class ReservaController:
             "periodo": {
                 "data_inicio": data_inicio_str,
                 "data_fim": data_fim_str
+            },
+
+            "filtros": {
+                "veiculo_id": veiculo_id,
+                "categoria": categoria or None,
+                "status": status or None,
+                "tipo_reserva": tipo_reserva or None,
+                "local_retirada": local_retirada or None
             },
 
             "resumo": {
@@ -660,11 +762,87 @@ class ReservaController:
                         2
                     ),
 
+                "taxa_cancelamento":
+                    round(
+                        taxa_cancelamento,
+                        2
+                    ),
+
+                "taxa_ocupacao":
+                    round(
+                        taxa_ocupacao,
+                        2
+                    ),
+
+                "dias_alugados":
+                    dias_alugados,
+
+                "total_veiculos":
+                    total_veiculos,
+
                 "por_status":
                     por_status
             },
 
+            "receita_por_categoria": [
+                {
+                    "categoria": nome,
+                    "receita": round(valor, 2)
+                }
+                for nome, valor in sorted(
+                    receita_por_categoria.items(),
+                    key=lambda item: item[1],
+                    reverse=True
+                )
+                if valor > 0
+            ],
+
+            "receita_periodo":
+                receita_periodo,
+
             "reservas":
                 lista
 
+        }), 200
+
+    @funcionario_required
+    @staticmethod
+    def filtros_relatorio():
+        veiculos = (
+            Veiculo.query
+            .order_by(Veiculo.marca, Veiculo.modelo)
+            .all()
+        )
+
+        categorias = sorted({
+            v.categoria for v in veiculos if v.categoria
+        })
+
+        locais = [
+            local for (local,) in (
+                db.session.query(Reserva.local_retirada)
+                .distinct()
+                .order_by(Reserva.local_retirada)
+                .all()
+            )
+            if local
+        ]
+
+        return jsonify({
+            "veiculos": [
+                {
+                    "id": v.id,
+                    "nome": f"{v.marca} {v.modelo}",
+                    "placa": v.placa
+                }
+                for v in veiculos
+            ],
+
+            "categorias": categorias,
+
+            "status": ["Inactive", "Active", "Em Uso", "Concluído", "Cancelada"],
+
+            "tipos_reserva": ["comum", "assinatura"],
+
+            "locais_retirada": locais
         }), 200

@@ -132,6 +132,10 @@ def configurar_rotas(app):
     def relatorio_receitas():
         return ReservaController.relatorio_receitas()
 
+    @app.route('/relatorios/filtros', methods=['GET'])
+    def filtros_relatorio():
+        return ReservaController.filtros_relatorio()
+
     ## Avaliação pós-locação
     @app.route('/reservas/<int:reserva_id>/avaliacao', methods=['POST'])
     def criar_avaliacao(reserva_id):
