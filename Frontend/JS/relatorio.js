@@ -55,11 +55,27 @@ function escapeHtml(texto) {
   return div.innerHTML;
 }
 
-const CORES_CATEGORIA = ["#f28c1c", "#27b0a5", "#0f172a", "#6366f1", "#e11d48", "#94a3b8"];
+const CORES_CATEGORIA = {
+  "Econômico": "#27b0a5",
+  "Executivo": "#f28c1c",
+  "SUV": "#0f172a",
+  "Van": "#6366f1",
+  "Sem categoria": "#94a3b8"
+};
+const CORES_EXTRAS = ["#e11d48", "#16a34a", "#ca8a04", "#0891b2", "#9333ea", "#be185d"];
 
 let graficoCategoria = null;
 let graficoPeriodo = null;
 let ultimoRelatorio = null;
+let categoriasCadastradas = [];
+
+function corCategoria(nome) {
+  if (CORES_CATEGORIA[nome]) return CORES_CATEGORIA[nome];
+
+  const extras = categoriasCadastradas.filter((c) => !CORES_CATEGORIA[c]);
+  const indice = extras.indexOf(nome);
+  return CORES_EXTRAS[(indice >= 0 ? indice : extras.length) % CORES_EXTRAS.length];
+}
 
 function preencherSelect(id, opcoes) {
   const select = document.getElementById(id);
@@ -80,6 +96,7 @@ async function carregarFiltros(token) {
     if (!resp.ok) throw new Error();
 
     const filtros = await resp.json();
+    categoriasCadastradas = filtros.categorias;
 
     preencherSelect("filtro_veiculo", filtros.veiculos.map((v) => ({ valor: v.id, texto: `${v.nome} (${v.placa})` })));
     preencherSelect("filtro_categoria", filtros.categorias.map((c) => ({ valor: c, texto: c })));
@@ -317,7 +334,7 @@ function renderGraficos(data, soAssinatura) {
         labels: categorias.map((c) => c.categoria),
         datasets: [{
           data: categorias.map((c) => c.receita),
-          backgroundColor: categorias.map((_, i) => CORES_CATEGORIA[i % CORES_CATEGORIA.length]),
+          backgroundColor: categorias.map((c) => corCategoria(c.categoria)),
           borderColor: "#fff",
           borderWidth: 2
         }]
