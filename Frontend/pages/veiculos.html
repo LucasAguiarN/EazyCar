@@ -32,11 +32,35 @@
     </header>
 
 
-    <main class="container" style="margin-top: 100px; min-height: 60vh;">
-        <section class="popular-cars" style="padding-top: 0;">
+    <main class="container fleet-page">
+        <section class="popular-cars fleet-section">
             <h2>Nossa Frota de Veículos</h2>
-            <p>Escolha o carro ideal para a sua viagem</p>
-            <hr style="margin-bottom: 40px; border: 1px solid #eee;">
+            <p class="fleet-subtitle">Escolha o carro ideal para a sua viagem</p>
+            <div class="car-filters" aria-label="Filtros da frota">
+                <div class="car-filters-heading">
+                    <h3>Encontre seu próximo carro</h3>
+                    <p>Refine a busca por modelo, categoria ou valor da diária.</p>
+                </div>
+                <div class="car-filter-field">
+                    <label for="filtro_busca">Buscar veículo</label>
+                    <input type="search" id="filtro_busca" placeholder="Marca ou modelo">
+                </div>
+                <div class="car-filter-field">
+                    <label for="filtro_categoria">Categoria</label>
+                    <select id="filtro_categoria">
+                        <option value="">Todas as categorias</option>
+                    </select>
+                </div>
+                <div class="car-filter-field">
+                    <label for="filtro_preco_maximo">Diária máxima (R$)</label>
+                    <input type="number" id="filtro_preco_maximo" min="0" step="50" placeholder="Sem limite">
+                </div>
+                <div class="car-filters-footer">
+                    <p id="resultado_filtros" class="car-filter-results" role="status" aria-live="polite"></p>
+                    <button type="button" id="limpar_filtros" class="car-filter-reset">Limpar filtros</button>
+                </div>
+            </div>
+            <hr class="fleet-divider">
             <div id="grid_frota" class="car-types-grid">
                 <p>Carregando nossa frota...</p>
             </div>
